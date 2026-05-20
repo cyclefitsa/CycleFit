@@ -1,0 +1,878 @@
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans@5.0.8/index.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F3EE;--card:#FFFFFF;--yellow:#F5C000;--yellow-light:#FFF7D6;--yellow-dark:#C49800;
+  --text:#1C1C1E;--muted:#8E8E93;--border:rgba(0,0,0,0.07);
+  --olive:#8A9E7A;--pink:#D4A8B0;--radius:18px;--radius-sm:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl}
+body.en{direction:ltr}
+.app{max-width:420px;margin:0 auto;background:var(--bg);min-height:100vh;position:relative;overflow-x:hidden}
+
+/* HEADER */
+.header{padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between}
+.header-logo{display:flex;flex-direction:column}
+.logo-text{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--text)}
+.logo-loc{font-size:12px;color:var(--muted);margin-top:1px;display:flex;align-items:center;gap:4px}
+.lang-pill{background:var(--yellow);color:#1C1C1E;border:none;padding:6px 14px;border-radius:30px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* NAV */
+.nav{display:flex;background:var(--card);border-radius:22px;margin:0 16px 12px;padding:6px;box-shadow:0 2px 16px rgba(0,0,0,0.07);position:sticky;bottom:10px;z-index:20}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;cursor:pointer;font-size:10px;font-weight:600;color:var(--muted);gap:3px;border-radius:16px;transition:.2s}
+.nav-item.active{background:var(--yellow);color:var(--text)}
+.nav-item svg{width:20px;height:20px}
+
+/* SCREENS */
+.screen{display:none;padding:8px 16px 90px;animation:up .25s ease}
+.screen.active{display:block}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+.card-sm{background:var(--card);border-radius:var(--radius-sm);padding:14px}
+
+/* BALANCE HERO */
+.hero{background:var(--text);color:#fff;border-radius:var(--radius);padding:22px;margin-bottom:12px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:180px;height:180px;background:var(--yellow);opacity:.12;border-radius:50%;top:-60px;left:-40px}
+.hero::after{content:'';position:absolute;width:120px;height:120px;background:var(--yellow);opacity:.08;border-radius:50%;bottom:-30px;right:20px}
+.hero-lbl{font-size:12px;color:rgba(255,255,255,.55);font-weight:600;margin-bottom:6px;position:relative;z-index:1}
+.hero-amount{font-size:38px;font-weight:800;letter-spacing:-1px;position:relative;z-index:1}
+.hero-amount span{font-size:18px;font-weight:600;opacity:.7}
+.hero-pts{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:30px;padding:5px 12px;font-size:12px;font-weight:700;margin-top:12px;position:relative;z-index:1}
+.hero-pts .dot{width:8px;height:8px;background:var(--yellow);border-radius:50%}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.qa-btn{background:var(--card);border-radius:var(--radius-sm);padding:16px;cursor:pointer;transition:.15s;border:1.5px solid transparent}
+.qa-btn:hover{border-color:var(--yellow);background:var(--yellow-light)}
+.qa-icon{width:36px;height:36px;background:var(--yellow-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.qa-icon svg{width:20px;height:20px;color:var(--yellow-dark)}
+.qa-lbl{font-size:13px;font-weight:700;color:var(--text)}
+
+/* SECTION TITLE */
+.sec{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sec-h{font-size:16px;font-weight:800;color:var(--text)}
+.sec-sub{font-size:12px;color:var(--muted);font-weight:600}
+
+/* BIKE CARDS */
+.bike-row{background:var(--card);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:.15s;border:1.5px solid transparent}
+.bike-row:hover{border-color:var(--yellow)}
+.bike-row.rented{cursor:default;border-color:rgba(0,0,0,0.05)}
+.bike-id-badge{width:52px;height:52px;border-radius:14px;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--text);flex-shrink:0;letter-spacing:.5px}
+.bike-id-badge.grey{background:#EBEBEB;color:var(--muted)}
+.bike-mid{flex:1;min-width:0}
+.bike-name-lbl{font-size:15px;font-weight:800;color:var(--text)}
+.bike-loc{font-size:12px;color:var(--muted);margin-top:1px}
+.bike-status-row{display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:30px;font-size:11px;font-weight:700}
+.pill-green{background:#E6F5E6;color:#2E7D32}
+.pill-orange{background:#FFF3E0;color:#C45E00}
+.pill.dot::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+.avail-timer{font-size:13px;font-weight:800;color:#C45E00;font-variant-numeric:tabular-nums}
+.bike-right{text-align:left;flex-shrink:0}
+body.en .bike-right{text-align:right}
+.bike-price-main{font-size:15px;font-weight:800;color:var(--text)}
+.bike-price-sub{font-size:10px;color:var(--muted);font-weight:600;margin-top:1px}
+
+/* TRACKING */
+.track-hero{background:var(--text);border-radius:var(--radius);padding:20px;margin-bottom:12px;color:#fff;position:relative;overflow:hidden}
+.track-hero::before{content:'';position:absolute;width:200px;height:200px;background:var(--yellow);opacity:.1;border-radius:50%;top:-80px;right:-60px}
+.track-tag{font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.track-bike-nm{font-size:18px;font-weight:800;margin-bottom:16px;position:relative;z-index:1}
+.track-timer-lbl{font-size:12px;color:rgba(255,255,255,.55);font-weight:600}
+.track-timer-big{font-size:58px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1;margin:4px 0}
+.no-ref-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(245,192,0,.18);border:1px solid rgba(245,192,0,.35);border-radius:30px;padding:4px 10px;font-size:11px;color:var(--yellow);font-weight:700;margin-top:10px}
+.map-area{background:rgba(255,255,255,.1);border-radius:14px;height:140px;position:relative;overflow:hidden;margin:14px 0 0}
+.map-svg{position:absolute;inset:0;width:100%;height:100%;opacity:.2}
+.bike-pin{position:absolute;width:14px;height:14px;background:var(--yellow);border-radius:50%;border:2px solid #fff;top:38%;left:32%;animation:drift 7s ease-in-out infinite;z-index:2}
+@keyframes drift{0%{top:38%;left:32%}30%{top:52%;left:50%}65%{top:30%;left:64%}100%{top:38%;left:32%}}
+.ping{position:absolute;width:34px;height:34px;border:2px solid rgba(245,192,0,.6);border-radius:50%;top:calc(38% - 10px);left:calc(32% - 10px);animation:ping 2s infinite;z-index:1}
+@keyframes ping{0%{transform:scale(1);opacity:1}100%{transform:scale(2.5);opacity:0}}
+.map-loc-tag{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);color:#fff;font-size:11px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:600;z-index:3}
+.stats-4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.stat-cell{background:rgba(255,255,255,.1);border-radius:10px;padding:10px}
+.stat-cell-lbl{font-size:10px;color:rgba(255,255,255,.55);font-weight:600}
+.stat-cell-val{font-size:16px;font-weight:800;margin-top:2px}
+
+.policy-note{background:var(--yellow-light);border-radius:var(--radius-sm);padding:11px 14px;margin-bottom:12px;font-size:12px;color:#7A5A00;font-weight:600;line-height:1.6;border:1px solid rgba(245,192,0,.35)}
+.btn-end{width:100%;background:var(--text);color:#fff;border:none;border-radius:var(--radius-sm);padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:8px;transition:.15s}
+.btn-end:hover{background:#333}
+.btn-outline{width:100%;background:transparent;color:var(--text);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-outline:hover{border-color:var(--yellow);background:var(--yellow-light)}
+
+/* LOYALTY */
+.loyalty-hero{background:var(--text);border-radius:var(--radius);padding:22px;margin-bottom:12px;color:#fff;position:relative;overflow:hidden}
+.loyalty-hero::before{content:'';position:absolute;width:160px;height:160px;background:var(--yellow);opacity:.1;border-radius:50%;bottom:-50px;left:-40px}
+.tier-lbl{display:inline-block;background:rgba(245,192,0,.2);color:var(--yellow);font-size:12px;font-weight:800;padding:4px 12px;border-radius:30px;margin-bottom:8px}
+.loy-pts-big{font-size:46px;font-weight:800;letter-spacing:-1px;position:relative;z-index:1}
+.prog-track{background:rgba(255,255,255,.15);border-radius:30px;height:7px;margin:14px 0 6px}
+.prog-fill{background:var(--yellow);border-radius:30px;height:7px;transition:width 1s ease}
+.tier-markers{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.5);font-weight:600}
+.pts-tagline{font-size:11px;color:rgba(255,255,255,.55);margin-top:8px;font-weight:600}
+
+.rewards-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.rw-card{background:var(--card);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.rw-icon{width:40px;height:40px;background:var(--yellow-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.rw-icon svg{width:20px;height:20px;color:var(--yellow-dark)}
+.rw-name{font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px}
+.rw-pts{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px}
+.rw-btn{width:100%;padding:8px;background:var(--yellow);color:var(--text);border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit}
+.rw-btn:disabled{background:#EBEBEB;color:var(--muted);cursor:not-allowed}
+
+.earn-card{background:var(--card);border-radius:var(--radius-sm);padding:16px}
+.earn-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.earn-row:last-child{border-bottom:none}
+.earn-row span:first-child{color:var(--muted);font-weight:600}
+.earn-row span:last-child{font-weight:800;color:var(--yellow-dark)}
+
+/* HISTORY */
+.stats-bar{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-box{background:var(--card);border-radius:var(--radius-sm);padding:14px}
+.stat-box-lbl{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px}
+.stat-box-val{font-size:22px;font-weight:800;color:var(--text)}
+.stat-box-unit{font-size:12px;font-weight:600;color:var(--muted)}
+
+/* CHART */
+.chart-wrap{background:var(--card);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px}
+.chart-title-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.chart-avg-lbl{font-size:11px;color:var(--muted);font-weight:700}
+.chart-avg-val{font-size:24px;font-weight:800;letter-spacing:-.5px;color:var(--text)}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-top:14px;padding-bottom:4px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%}
+.bar-seg{width:100%;border-radius:4px 4px 0 0;transition:height .5s ease}
+.bar-date{font-size:9px;color:var(--muted);font-weight:700;margin-top:4px}
+.bar-active .bar-seg{opacity:1}
+.bar-col .bar-seg{opacity:.7}
+
+.hist-item{background:var(--card);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hi-badge{width:40px;height:40px;background:var(--yellow-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--yellow-dark);flex-shrink:0}
+.hi-info{flex:1}
+.hi-bike-nm{font-size:14px;font-weight:800;color:var(--text)}
+.hi-meta{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.hi-right-col{text-align:left}
+body.en .hi-right-col{text-align:right}
+.hi-cost{font-size:15px;font-weight:800;color:var(--text)}
+.hi-pts{font-size:11px;font-weight:700;color:var(--yellow-dark);margin-top:2px}
+
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex}
+.sheet{background:var(--bg);border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;position:relative}
+.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:30px;margin:0 auto 18px}
+.sheet-title{font-size:18px;font-weight:800;margin-bottom:18px;color:var(--text)}
+.close-x{position:absolute;top:20px;left:20px;background:var(--card);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--muted);display:flex;align-items:center;justify-content:center}
+body.en .close-x{left:auto;right:20px}
+
+.dur-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.dur-tile{background:var(--card);border:2px solid transparent;border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:.15s}
+.dur-tile:hover{border-color:var(--yellow)}
+.dur-tile.sel{border-color:var(--yellow);background:var(--yellow-light)}
+.dur-tile-time{font-size:14px;font-weight:800;color:var(--text)}
+.dur-tile-price{font-size:22px;font-weight:800;color:var(--text);margin:4px 0}
+.dur-tile-note{font-size:10px;color:var(--muted);font-weight:700}
+.dur-tile.sel .dur-tile-note{color:var(--yellow-dark)}
+
+.pay-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.pay-tile{flex:1;min-width:80px;padding:10px 6px;background:var(--card);border:2px solid transparent;border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:12px;font-weight:700;transition:.15s}
+.pay-tile.sel{border-color:var(--yellow);background:var(--yellow-light)}
+.fld label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.fld input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:var(--card);color:var(--text);transition:.15s;margin-bottom:12px}
+.fld input:focus{border-color:var(--yellow)}
+.total-stripe{display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:14px}
+.total-stripe-lbl{font-size:13px;color:var(--muted);font-weight:700}
+.total-stripe-val{font-size:24px;font-weight:800;color:var(--text)}
+.btn-pay{width:100%;background:var(--yellow);color:var(--text);border:none;border-radius:var(--radius-sm);padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-pay:hover{background:var(--yellow-dark);color:#fff}
+.btn-cancel-link{width:100%;background:transparent;border:none;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;padding:12px;font-family:inherit}
+
+/* SUCCESS / END SHEET */
+.suc-wrap{text-align:center;padding:20px 0}
+.suc-icon{width:72px;height:72px;background:var(--yellow-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:pop .45s ease}
+@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
+.suc-icon svg{width:36px;height:36px;color:var(--yellow-dark)}
+.suc-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px}
+.suc-sub{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:20px;line-height:1.6}
+.pts-box{background:var(--yellow-light);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;text-align:center}
+.pts-box-lbl{font-size:12px;color:var(--yellow-dark);font-weight:700;margin-bottom:4px}
+.pts-box-num{font-size:36px;font-weight:800;color:var(--text)}
+.pts-box-note{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px}
+
+/* TOAST */
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--text);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;z-index:300;opacity:0;transition:all .35s ease;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+
+<div class="app" id="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-text">CycleFit</div>
+    <div class="logo-loc">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span id="h-loc">جازان - أبوعريش</span>
+    </div>
+  </div>
+  <button class="lang-pill" onclick="toggleLang()">EN / عر</button>
+</div>
+
+<!-- HOME -->
+<div id="s-home" class="screen active">
+  <div class="hero">
+    <div class="hero-lbl" id="lbl-bal">رصيدك</div>
+    <div class="hero-amount">150.00 <span>ر.س</span></div>
+    <div class="hero-pts"><div class="dot"></div><span id="lbl-pts-tag">نقاط الولاء</span> &nbsp;<strong id="pts-disp">320 ⭐</strong></div>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa-btn" onclick="openSheet('rent')">
+      <div class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M12 5h2l3 8H6l2-7H12z"/></svg></div>
+      <div class="qa-lbl" id="qa-rent">استأجر الآن</div>
+    </div>
+    <div class="qa-btn" onclick="showScreen('track')">
+      <div class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div class="qa-lbl" id="qa-track">تتبع الدراجة</div>
+    </div>
+    <div class="qa-btn" onclick="openSheet('topup')">
+      <div class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+      <div class="qa-lbl" id="qa-pay">شحن الرصيد</div>
+    </div>
+    <div class="qa-btn" onclick="showScreen('loyalty')">
+      <div class="qa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="qa-lbl" id="qa-loyalty">برنامج الولاء</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h" id="lbl-avail">الدراجات المتاحة</div>
+    <div class="sec-sub" id="lbl-loc-tag">أبوعريش</div>
+  </div>
+
+  <!-- A01 -->
+  <div class="bike-row" onclick="selectBike('A01')">
+    <div class="bike-id-badge">A01</div>
+    <div class="bike-mid">
+      <div class="bike-name-lbl">A01</div>
+      <div class="bike-loc" id="bm-A01">📍 أبوعريش الشمالية · 120م</div>
+      <div class="bike-status-row"><span class="pill pill-green dot" id="bs-A01">متاحة</span></div>
+    </div>
+    <div class="bike-right">
+      <div class="bike-price-main">10 ر.س</div>
+      <div class="bike-price-sub" id="bps-A01">من 15 دقيقة</div>
+    </div>
+  </div>
+  <!-- A02 -->
+  <div class="bike-row" onclick="selectBike('A02')">
+    <div class="bike-id-badge">A02</div>
+    <div class="bike-mid">
+      <div class="bike-name-lbl">A02</div>
+      <div class="bike-loc" id="bm-A02">📍 الكورنيش · 300م</div>
+      <div class="bike-status-row"><span class="pill pill-green dot" id="bs-A02">متاحة</span></div>
+    </div>
+    <div class="bike-right">
+      <div class="bike-price-main">10 ر.س</div>
+      <div class="bike-price-sub" id="bps-A02">من 15 دقيقة</div>
+    </div>
+  </div>
+  <!-- A03 -->
+  <div class="bike-row" onclick="selectBike('A03')">
+    <div class="bike-id-badge">A03</div>
+    <div class="bike-mid">
+      <div class="bike-name-lbl">A03</div>
+      <div class="bike-loc" id="bm-A03">📍 السوق المركزي · 450م</div>
+      <div class="bike-status-row"><span class="pill pill-green dot" id="bs-A03">متاحة</span></div>
+    </div>
+    <div class="bike-right">
+      <div class="bike-price-main">10 ر.س</div>
+      <div class="bike-price-sub" id="bps-A03">من 15 دقيقة</div>
+    </div>
+  </div>
+  <!-- A04 -->
+  <div class="bike-row" onclick="selectBike('A04')">
+    <div class="bike-id-badge">A04</div>
+    <div class="bike-mid">
+      <div class="bike-name-lbl">A04</div>
+      <div class="bike-loc" id="bm-A04">📍 حديقة الأمير · 600م</div>
+      <div class="bike-status-row"><span class="pill pill-green dot" id="bs-A04">متاحة</span></div>
+    </div>
+    <div class="bike-right">
+      <div class="bike-price-main">10 ر.س</div>
+      <div class="bike-price-sub" id="bps-A04">من 15 دقيقة</div>
+    </div>
+  </div>
+  <!-- A05 rented -->
+  <div class="bike-row rented" id="bike-A05-row">
+    <div class="bike-id-badge grey">A05</div>
+    <div class="bike-mid">
+      <div class="bike-name-lbl">A05</div>
+      <div class="bike-loc" id="bm-A05">📍 المطار القديم · 800م</div>
+      <div class="bike-status-row">
+        <span class="pill pill-orange dot" id="bs-A05">محجوزة</span>
+        <span id="avail-lbl" style="font-size:11px;color:#C45E00;font-weight:700">متاحة خلال:</span>
+        <span class="avail-timer" id="a05-timer">00:22:15</span>
+      </div>
+    </div>
+    <div class="bike-right">
+      <div class="bike-price-main" style="color:var(--muted)">10 ر.س</div>
+      <div class="bike-price-sub" id="bps-A05">من 15 دقيقة</div>
+    </div>
+  </div>
+</div>
+
+<!-- TRACK -->
+<div id="s-track" class="screen">
+  <div class="track-hero">
+    <div class="track-tag" id="lbl-active-tag">ACTIVE RENTAL</div>
+    <div class="track-bike-nm" id="track-bike-nm">A01</div>
+    <div class="track-timer-lbl" id="lbl-timeleft">الوقت المتبقي</div>
+    <div class="track-timer-big" id="countdown">00:15:00</div>
+    <div class="no-ref-pill">⚠️ <span id="lbl-noref">لا استرداد · الوقت المتبقي = نقاط ولاء</span></div>
+    <div class="map-area">
+      <svg class="map-svg" viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="35" x2="300" y2="35" stroke="white" stroke-width=".8"/>
+        <line x1="0" y1="70" x2="300" y2="70" stroke="white" stroke-width=".8"/>
+        <line x1="0" y1="105" x2="300" y2="105" stroke="white" stroke-width=".8"/>
+        <line x1="75" y1="0" x2="75" y2="140" stroke="white" stroke-width=".8"/>
+        <line x1="150" y1="0" x2="150" y2="140" stroke="white" stroke-width=".8"/>
+        <line x1="225" y1="0" x2="225" y2="140" stroke="white" stroke-width=".8"/>
+      </svg>
+      <div class="ping"></div>
+      <div class="bike-pin"></div>
+      <div class="map-loc-tag" id="map-loc-tag">📍 أبوعريش — يتحرك الآن</div>
+    </div>
+    <div class="stats-4">
+      <div class="stat-cell"><div class="stat-cell-lbl" id="ic-speed">السرعة</div><div class="stat-cell-val" id="speed-val">11 km/h</div></div>
+      <div class="stat-cell"><div class="stat-cell-lbl" id="ic-dist">المسافة</div><div class="stat-cell-val" id="dist-val">1.8 km</div></div>
+      <div class="stat-cell"><div class="stat-cell-lbl" id="ic-paid">المدفوع</div><div class="stat-cell-val" id="paid-val">10 ر.س</div></div>
+      <div class="stat-cell"><div class="stat-cell-lbl" id="ic-pts">نقاط مكتسبة</div><div class="stat-cell-val" id="pts-earn-val">+0 ⭐</div></div>
+    </div>
+  </div>
+  <div class="policy-note" id="policy-hint">💡 إنهاء مبكر؟ كل دقيقة غير مستخدمة = نقطة ولاء تُضاف فوراً!</div>
+  <button class="btn-end" onclick="endRental()" id="btn-end">إنهاء الإيجار</button>
+  <button class="btn-outline" onclick="openSheet('extend')" id="btn-extend">تمديد الوقت +</button>
+</div>
+
+<!-- LOYALTY -->
+<div id="s-loyalty" class="screen">
+  <div class="loyalty-hero">
+    <div class="tier-lbl" id="tier-badge">🥈 الفضية</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.5);font-weight:700;margin-bottom:4px" id="lbl-totalpts">إجمالي نقاطك</div>
+    <div class="loy-pts-big" id="loy-pts-big">320</div>
+    <div class="prog-track"><div class="prog-fill" id="loy-bar" style="width:64%"></div></div>
+    <div class="tier-markers"><span id="t-b">برونز 0</span><span id="t-s">فضة 300</span><span id="t-g">ذهب 500</span></div>
+    <div class="pts-tagline" id="lbl-tagline">180 نقطة للمستوى الذهبي</div>
+  </div>
+  <div class="policy-note" id="pts-policy">⭐ كل دقيقة غير مستخدمة = نقطة ولاء — لا يضيع من مالك شيء!</div>
+  <div class="sec" style="margin-bottom:10px"><div class="sec-h" id="lbl-rewards">المكافآت</div></div>
+  <div class="rewards-grid">
+    <div class="rw-card">
+      <div class="rw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M12 5h2l3 8H6l2-7H12z"/></svg></div>
+      <div class="rw-name" id="r1n">ساعة مجانية</div>
+      <div class="rw-pts" id="r1p">100 نقطة</div>
+      <button class="rw-btn" onclick="redeem(100,this)" id="rb1">استبدل</button>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
+      <div class="rw-name" id="r2n">خصم 20%</div>
+      <div class="rw-pts" id="r2p">150 نقطة</div>
+      <button class="rw-btn" onclick="redeem(150,this)" id="rb2">استبدل</button>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 15h6"/></svg></div>
+      <div class="rw-name" id="r3n">عضوية شهرية</div>
+      <div class="rw-pts" id="r3p">400 نقطة</div>
+      <button class="rw-btn" onclick="redeem(400,this)" id="rb3">استبدل</button>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="rw-name" id="r4n">يوم مجاني</div>
+      <div class="rw-pts" id="r4p">500 نقطة</div>
+      <button class="rw-btn" onclick="redeem(500,this)" id="rb4">استبدل</button>
+    </div>
+  </div>
+  <div class="sec-h" id="lbl-how" style="margin-bottom:10px">كيف تكسب النقاط؟</div>
+  <div class="earn-card">
+    <div class="earn-row"><span id="hw1">دقيقة غير مستخدمة</span><span>1 ⭐</span></div>
+    <div class="earn-row"><span id="hw2">رحلة مكتملة</span><span>+20 ⭐</span></div>
+    <div class="earn-row"><span id="hw3">إيجار يومي</span><span>+50 ⭐</span></div>
+    <div class="earn-row"><span id="hw4">دعوة صديق</span><span>+100 ⭐</span></div>
+    <div class="earn-row"><span id="hw5">تقييم رحلة</span><span>+5 ⭐</span></div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="s-history" class="screen">
+  <div class="stats-bar">
+    <div class="stat-box"><div class="stat-box-lbl" id="hs1">الرحلات</div><div class="stat-box-val">12</div></div>
+    <div class="stat-box"><div class="stat-box-lbl" id="hs2">المسافة</div><div class="stat-box-val">48.6 <span class="stat-box-unit">km</span></div></div>
+    <div class="stat-box"><div class="stat-box-lbl" id="hs3">الإنفاق</div><div class="stat-box-val">186 <span class="stat-box-unit" id="sar-lbl">ر.س</span></div></div>
+    <div class="stat-box"><div class="stat-box-lbl" id="hs4">نقاط مكتسبة</div><div class="stat-box-val" id="hist-pts-val">320 ⭐</div></div>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title-row">
+      <div><div class="chart-avg-lbl" id="chart-lbl">متوسط يومي</div><div class="chart-avg-val">32 <span style="font-size:14px;color:var(--muted)">دقيقة</span></div></div>
+    </div>
+    <div class="chart-bars" id="chart-bars"></div>
+  </div>
+  <div class="hist-item">
+    <div class="hi-badge">A01</div>
+    <div class="hi-info"><div class="hi-bike-nm" id="h1b">A01</div><div class="hi-meta" id="h1m">اليوم 14:30 · 15 د · 2.1 km</div></div>
+    <div class="hi-right-col"><div class="hi-cost">10 ر.س</div><div class="hi-pts">+20 ⭐</div></div>
+  </div>
+  <div class="hist-item">
+    <div class="hi-badge">A03</div>
+    <div class="hi-info"><div class="hi-bike-nm" id="h2b">A03</div><div class="hi-meta" id="h2m">أمس 09:00 · 45 د · 7.3 km (مبكر)</div></div>
+    <div class="hi-right-col"><div class="hi-cost">20 ر.س</div><div class="hi-pts">+15 ⭐ وقت غير مستخدم</div></div>
+  </div>
+  <div class="hist-item">
+    <div class="hi-badge">A02</div>
+    <div class="hi-info"><div class="hi-bike-nm" id="h3b">A02</div><div class="hi-meta" id="h3m">منذ 3 أيام · ساعتان كاملتان</div></div>
+    <div class="hi-right-col"><div class="hi-cost">30 ر.س</div><div class="hi-pts">+50 ⭐</div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-item active" onclick="showScreen('home')" id="nav-home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span id="nav-home-lbl">الرئيسية</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('track')" id="nav-track">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span id="nav-track-lbl">تتبع</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('loyalty')" id="nav-loyalty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span id="nav-loyalty-lbl">الولاء</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('history')" id="nav-history">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span id="nav-hist-lbl">السجل</span>
+  </div>
+</div>
+</div>
+
+<!-- SHEETS -->
+<div class="overlay" id="sh-rent">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="close-x" onclick="closeSheet('rent')">✕</button>
+    <div class="sheet-title" id="sh-rent-title">استئجار دراجة</div>
+    <div style="background:var(--yellow-light);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+      <div style="width:42px;height:42px;background:var(--yellow);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800" id="sh-bike-id">A01</div>
+      <div><div style="font-size:14px;font-weight:800;color:var(--text)" id="sh-bike-loc">أبوعريش الشمالية</div><div style="font-size:11px;color:var(--muted);font-weight:600" id="sh-bike-dist">120م منك</div></div>
+    </div>
+    <div style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px" id="lbl-dur">اختر المدة</div>
+    <div class="dur-grid">
+      <div class="dur-tile sel" onclick="pickDur(this,15,10)">
+        <div class="dur-tile-time" id="dt1">15 دقيقة</div>
+        <div class="dur-tile-price">10 ر.س</div>
+        <div class="dur-tile-note" id="dn1">تنقل سريع</div>
+      </div>
+      <div class="dur-tile" onclick="pickDur(this,30,15)">
+        <div class="dur-tile-time" id="dt2">30 دقيقة</div>
+        <div class="dur-tile-price">15 ر.س</div>
+        <div class="dur-tile-note" id="dn2">جولة قصيرة</div>
+      </div>
+      <div class="dur-tile" onclick="pickDur(this,60,20)">
+        <div class="dur-tile-time" id="dt3">ساعة كاملة</div>
+        <div class="dur-tile-price">20 ر.س</div>
+        <div class="dur-tile-note" id="dn3">⭐ الأكثر طلباً</div>
+      </div>
+      <div class="dur-tile" onclick="pickDur(this,120,30)">
+        <div class="dur-tile-time" id="dt4">ساعتان</div>
+        <div class="dur-tile-price">30 ر.س</div>
+        <div class="dur-tile-note" id="dn4">رحلة ممتعة</div>
+      </div>
+    </div>
+    <div style="background:var(--yellow-light);border:1px solid rgba(245,192,0,.4);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#7A5A00;font-weight:600;line-height:1.6" id="sh-policy">
+      ⚠️ <strong>لا استرداد</strong> — الوقت غير المستخدم يتحول لنقاط ولاء فوراً 🎁
+    </div>
+    <div style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px" id="lbl-pay">طريقة الدفع</div>
+    <div class="pay-row">
+      <div class="pay-tile sel" onclick="pickPay(this,'wallet')">👛 <span id="pw-lbl">المحفظة</span></div>
+      <div class="pay-tile" onclick="pickPay(this,'card')">💳 <span id="pc-lbl">بطاقة</span></div>
+      <div class="pay-tile" onclick="pickPay(this,'stc')">📱 STC</div>
+    </div>
+    <div id="card-flds" style="display:none">
+      <div class="fld"><label id="lbl-cnum">رقم البطاقة</label><input type="text" placeholder="1234 5678 9012 3456" maxlength="19"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="fld"><label id="lbl-exp">الانتهاء</label><input type="text" placeholder="MM/YY"></div>
+        <div class="fld"><label>CVV</label><input type="text" placeholder="123" maxlength="3"></div>
+      </div>
+    </div>
+    <div class="total-stripe">
+      <span class="total-stripe-lbl" id="lbl-total">المجموع</span>
+      <span class="total-stripe-val" id="total-val">10 ر.س</span>
+    </div>
+    <button class="btn-pay" onclick="confirmRent()" id="btn-confirm">تأكيد الدفع</button>
+    <button class="btn-cancel-link" onclick="closeSheet('rent')" id="btn-cancel">إلغاء</button>
+  </div>
+</div>
+
+<div class="overlay" id="sh-topup">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="close-x" onclick="closeSheet('topup')">✕</button>
+    <div class="sheet-title" id="sh-topup-title">شحن الرصيد</div>
+    <div class="dur-grid">
+      <div class="dur-tile" onclick="pickTopup(this,50)"><div class="dur-tile-price">50</div><div class="dur-tile-note">ر.س</div></div>
+      <div class="dur-tile sel" onclick="pickTopup(this,100)"><div class="dur-tile-price">100</div><div class="dur-tile-note">ر.س</div></div>
+      <div class="dur-tile" onclick="pickTopup(this,200)"><div class="dur-tile-price">200</div><div class="dur-tile-note">ر.س</div></div>
+      <div class="dur-tile" onclick="pickTopup(this,500)"><div class="dur-tile-price">500</div><div class="dur-tile-note">ر.س</div></div>
+    </div>
+    <div class="pay-row">
+      <div class="pay-tile sel" onclick="pickPay(this,'card')">💳 <span id="tp-lbl">بطاقة</span></div>
+      <div class="pay-tile" onclick="pickPay(this,'stc')">📱 STC</div>
+      <div class="pay-tile" onclick="pickPay(this,'mada')">🏦 مدى</div>
+    </div>
+    <div class="fld"><label id="lbl-cn2">رقم البطاقة</label><input type="text" placeholder="1234 5678 9012 3456"></div>
+    <button class="btn-pay" onclick="confirmTopup()" id="btn-topup">شحن الآن</button>
+  </div>
+</div>
+
+<div class="overlay" id="sh-extend">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="close-x" onclick="closeSheet('extend')">✕</button>
+    <div class="sheet-title" id="sh-ext-title">تمديد الوقت</div>
+    <div class="dur-grid">
+      <div class="dur-tile sel" onclick="pickExt(this,15)"><div class="dur-tile-time" id="ex1">15 دقيقة</div><div class="dur-tile-price">10 ر.س</div></div>
+      <div class="dur-tile" onclick="pickExt(this,30)"><div class="dur-tile-time" id="ex2">30 دقيقة</div><div class="dur-tile-price">15 ر.س</div></div>
+      <div class="dur-tile" onclick="pickExt(this,60)"><div class="dur-tile-time" id="ex3">ساعة</div><div class="dur-tile-price">20 ر.س</div></div>
+      <div class="dur-tile" onclick="pickExt(this,120)"><div class="dur-tile-time" id="ex4">ساعتان</div><div class="dur-tile-price">30 ر.س</div></div>
+    </div>
+    <div style="background:var(--yellow-light);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#7A5A00;font-weight:600" id="ext-note">⭐ الوقت الإضافي غير المستخدم يُحوَّل أيضاً لنقاط</div>
+    <button class="btn-pay" onclick="confirmExt()" id="btn-ext">تأكيد التمديد</button>
+  </div>
+</div>
+
+<div class="overlay" id="sh-success">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="suc-wrap">
+      <div class="suc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="suc-title" id="suc-t">تم الحجز!</div>
+      <div class="suc-sub" id="suc-s">ركوبك بدأ 🚴 الوقت غير المستخدم = نقاط ولاء</div>
+      <button class="btn-pay" onclick="closeSheet('success');showScreen('track')" id="btn-go">عرض التتبع المباشر</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="sh-end">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="suc-wrap">
+      <div class="suc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="suc-title" id="end-t">انتهت الرحلة!</div>
+      <div class="suc-sub" id="end-s">تم تحويل وقتك غير المستخدم إلى نقاط ولاء</div>
+      <div class="pts-box">
+        <div class="pts-box-lbl" id="end-unused-lbl">الوقت غير المستخدم</div>
+        <div class="pts-box-num" id="end-unused-val">0 دقيقة</div>
+        <div style="font-size:24px;font-weight:800;color:var(--yellow-dark);margin-top:8px" id="end-pts">+ 0 نقطة ⭐</div>
+        <div class="pts-box-note" id="end-note">أُضيفت فوراً لحسابك</div>
+      </div>
+      <button class="btn-pay" onclick="closeSheet('end');showScreen('home')" id="btn-eh">العودة للرئيسية</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ تم!</div>
+
+<script>
+const BIKES={
+  A01:{ar:'أبوعريش الشمالية',en:'N. Abu Arish',dist_ar:'120م',dist_en:'120m'},
+  A02:{ar:'الكورنيش',en:'Corniche',dist_ar:'300م',dist_en:'300m'},
+  A03:{ar:'السوق المركزي',en:'Central Market',dist_ar:'450م',dist_en:'450m'},
+  A04:{ar:'حديقة الأمير',en:'Prince Park',dist_ar:'600م',dist_en:'600m'},
+  A05:{ar:'المطار القديم',en:'Old Airport',dist_ar:'800م',dist_en:'800m'}
+};
+
+const PRICES={15:10,30:15,60:20,120:30};
+
+const TR={
+ar:{
+  'h-loc':'جازان - أبوعريش',
+  'lbl-bal':'رصيدك','lbl-pts-tag':'نقاط الولاء',
+  'qa-rent':'استأجر الآن','qa-track':'تتبع الدراجة','qa-pay':'شحن الرصيد','qa-loyalty':'برنامج الولاء',
+  'lbl-avail':'الدراجات المتاحة','lbl-loc-tag':'أبوعريش',
+  'bs-A01':'متاحة','bs-A02':'متاحة','bs-A03':'متاحة','bs-A04':'متاحة','bs-A05':'محجوزة',
+  'bm-A01':'📍 أبوعريش الشمالية · 120م','bm-A02':'📍 الكورنيش · 300م',
+  'bm-A03':'📍 السوق المركزي · 450م','bm-A04':'📍 حديقة الأمير · 600م','bm-A05':'📍 المطار القديم · 800م',
+  'bps-A01':'من 15 دقيقة','bps-A02':'من 15 دقيقة','bps-A03':'من 15 دقيقة','bps-A04':'من 15 دقيقة','bps-A05':'من 15 دقيقة',
+  'avail-lbl':'متاحة خلال:',
+  'lbl-active-tag':'الإيجار النشط','lbl-timeleft':'الوقت المتبقي',
+  'lbl-noref':'لا استرداد · الوقت المتبقي = نقاط ولاء',
+  'map-loc-tag':'📍 أبوعريش — يتحرك الآن',
+  'ic-speed':'السرعة','ic-dist':'المسافة','ic-paid':'المدفوع','ic-pts':'نقاط مكتسبة',
+  'policy-hint':'💡 إنهاء مبكر؟ كل دقيقة غير مستخدمة = نقطة ولاء تُضاف فوراً!',
+  'btn-end':'إنهاء الإيجار','btn-extend':'تمديد الوقت +',
+  'tier-badge':'🥈 الفضية','lbl-totalpts':'إجمالي نقاطك',
+  't-b':'برونز 0','t-s':'فضة 300','t-g':'ذهب 500','lbl-tagline':'180 نقطة للمستوى الذهبي',
+  'pts-policy':'⭐ كل دقيقة غير مستخدمة = نقطة ولاء — لا يضيع من مالك شيء!',
+  'lbl-rewards':'المكافآت',
+  'r1n':'ساعة مجانية','r1p':'100 نقطة','rb1':'استبدل',
+  'r2n':'خصم 20%','r2p':'150 نقطة','rb2':'استبدل',
+  'r3n':'عضوية شهرية','r3p':'400 نقطة','rb3':'استبدل',
+  'r4n':'يوم مجاني','r4p':'500 نقطة','rb4':'استبدل',
+  'lbl-how':'كيف تكسب النقاط؟',
+  'hw1':'دقيقة غير مستخدمة','hw2':'رحلة مكتملة','hw3':'إيجار يومي','hw4':'دعوة صديق','hw5':'تقييم رحلة',
+  'hs1':'الرحلات','hs2':'المسافة','hs3':'الإنفاق','hs4':'نقاط مكتسبة','sar-lbl':'ر.س',
+  'chart-lbl':'متوسط يومي',
+  'h1b':'A01','h1m':'اليوم 14:30 · 15 د · 2.1 km',
+  'h2b':'A03','h2m':'أمس 09:00 · 45 د · 7.3 km (مبكر)',
+  'h3b':'A02','h3m':'منذ 3 أيام · ساعتان كاملتان',
+  'nav-home-lbl':'الرئيسية','nav-track-lbl':'تتبع','nav-loyalty-lbl':'الولاء','nav-hist-lbl':'السجل',
+  'sh-rent-title':'استئجار دراجة','lbl-dur':'اختر المدة',
+  'dt1':'15 دقيقة','dn1':'تنقل سريع','dt2':'30 دقيقة','dn2':'جولة قصيرة',
+  'dt3':'ساعة كاملة','dn3':'⭐ الأكثر طلباً','dt4':'ساعتان','dn4':'رحلة ممتعة',
+  'sh-policy':'⚠️ <strong>لا استرداد</strong> — الوقت غير المستخدم يتحول لنقاط ولاء فوراً 🎁',
+  'lbl-pay':'طريقة الدفع','pw-lbl':'المحفظة','pc-lbl':'بطاقة',
+  'lbl-cnum':'رقم البطاقة','lbl-exp':'الانتهاء','lbl-total':'المجموع',
+  'btn-confirm':'تأكيد الدفع','btn-cancel':'إلغاء',
+  'sh-topup-title':'شحن الرصيد','tp-lbl':'بطاقة','lbl-cn2':'رقم البطاقة','btn-topup':'شحن الآن',
+  'sh-ext-title':'تمديد الوقت',
+  'ex1':'15 دقيقة','ex2':'30 دقيقة','ex3':'ساعة','ex4':'ساعتان',
+  'ext-note':'⭐ الوقت الإضافي غير المستخدم يُحوَّل أيضاً لنقاط',
+  'btn-ext':'تأكيد التمديد',
+  'suc-t':'تم الحجز!','suc-s':'ركوبك بدأ 🚴 الوقت غير المستخدم = نقاط ولاء','btn-go':'عرض التتبع المباشر',
+  'end-t':'انتهت الرحلة!','end-s':'تم تحويل وقتك غير المستخدم إلى نقاط ولاء',
+  'end-unused-lbl':'الوقت غير المستخدم','end-note':'أُضيفت فوراً لحسابك','btn-eh':'العودة للرئيسية'
+},
+en:{
+  'h-loc':'Jizan - Abu Arish',
+  'lbl-bal':'Your Balance','lbl-pts-tag':'Loyalty Points',
+  'qa-rent':'Rent Now','qa-track':'Track Bike','qa-pay':'Top Up','qa-loyalty':'Loyalty',
+  'lbl-avail':'Available Bikes','lbl-loc-tag':'Abu Arish',
+  'bs-A01':'Available','bs-A02':'Available','bs-A03':'Available','bs-A04':'Available','bs-A05':'Rented',
+  'bm-A01':'📍 N. Abu Arish · 120m','bm-A02':'📍 Corniche · 300m',
+  'bm-A03':'📍 Central Market · 450m','bm-A04':'📍 Prince Park · 600m','bm-A05':'📍 Old Airport · 800m',
+  'bps-A01':'from 15 min','bps-A02':'from 15 min','bps-A03':'from 15 min','bps-A04':'from 15 min','bps-A05':'from 15 min',
+  'avail-lbl':'Available in:',
+  'lbl-active-tag':'ACTIVE RENTAL','lbl-timeleft':'Time Remaining',
+  'lbl-noref':'No refunds · Unused time = loyalty points',
+  'map-loc-tag':'📍 Abu Arish — Moving now',
+  'ic-speed':'Speed','ic-dist':'Distance','ic-paid':'Paid','ic-pts':'Points Earned',
+  'policy-hint':'💡 Ending early? Every unused minute = 1 loyalty point added instantly!',
+  'btn-end':'End Rental','btn-extend':'Extend Time +',
+  'tier-badge':'🥈 Silver','lbl-totalpts':'Your Total Points',
+  't-b':'Bronze 0','t-s':'Silver 300','t-g':'Gold 500','lbl-tagline':'180 pts to Gold tier',
+  'pts-policy':'⭐ Every unused minute = 1 loyalty point — your money never goes to waste!',
+  'lbl-rewards':'Rewards',
+  'r1n':'1 Free Hour','r1p':'100 pts','rb1':'Redeem',
+  'r2n':'20% Discount','r2p':'150 pts','rb2':'Redeem',
+  'r3n':'Monthly Pass','r3p':'400 pts','rb3':'Redeem',
+  'r4n':'Free Day','r4p':'500 pts','rb4':'Redeem',
+  'lbl-how':'How to Earn Points?',
+  'hw1':'Each unused minute','hw2':'Complete a full ride','hw3':'Full day rental','hw4':'Refer a friend','hw5':'Rate a trip',
+  'hs1':'Trips','hs2':'Distance','hs3':'Spent','hs4':'Points Earned','sar-lbl':'SAR',
+  'chart-lbl':'Daily Average',
+  'h1b':'A01','h1m':'Today 2:30 PM · 15 min · 2.1 km',
+  'h2b':'A03','h2m':'Yesterday 9:00 AM · 45 min · 7.3 km (early)',
+  'h3b':'A02','h3m':'3 days ago · Full 2 hours',
+  'nav-home-lbl':'Home','nav-track-lbl':'Track','nav-loyalty-lbl':'Loyalty','nav-hist-lbl':'History',
+  'sh-rent-title':'Rent a Bike','lbl-dur':'Choose Duration',
+  'dt1':'15 minutes','dn1':'Quick trip','dt2':'30 minutes','dn2':'Short ride',
+  'dt3':'1 hour','dn3':'⭐ Most popular','dt4':'2 hours','dn4':'Long adventure',
+  'sh-policy':'⚠️ <strong>No Refunds</strong> — Unused time converts to loyalty points instantly 🎁',
+  'lbl-pay':'Payment Method','pw-lbl':'Wallet','pc-lbl':'Card',
+  'lbl-cnum':'Card Number','lbl-exp':'Expiry','lbl-total':'Total',
+  'btn-confirm':'Confirm & Pay','btn-cancel':'Cancel',
+  'sh-topup-title':'Top Up Balance','tp-lbl':'Card','lbl-cn2':'Card Number','btn-topup':'Top Up Now',
+  'sh-ext-title':'Extend Time',
+  'ex1':'15 min','ex2':'30 min','ex3':'1 hour','ex4':'2 hours',
+  'ext-note':'⭐ Unused extra time also converts to loyalty points',
+  'btn-ext':'Confirm Extension',
+  'suc-t':'Booking Confirmed!','suc-s':'Ride started 🚴 Unused time = loyalty points','btn-go':'View Live Tracking',
+  'end-t':'Ride Ended!','end-s':'Your unused time has been converted to loyalty points',
+  'end-unused-lbl':'Unused Time','end-note':'Added to your account instantly','btn-eh':'Back to Home'
+}
+};
+
+let lang='ar',userPts=320,timerSecs=0,timerInt=null,curBikeId='A01',curDur=15,curPrice=10,curExt=15,curTopup=100;
+let a05Secs=1335;
+
+function toggleLang(){
+  lang=lang==='ar'?'en':'ar';
+  document.body.classList.toggle('en',lang==='en');
+  document.getElementById('app').setAttribute('dir',lang==='ar'?'rtl':'ltr');
+  const d=TR[lang];
+  Object.keys(d).forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(id==='sh-policy')el.innerHTML=d[id];
+    else el.textContent=d[id];
+  });
+  document.getElementById('pts-disp').textContent=userPts+' ⭐';
+  document.getElementById('loy-pts-big').textContent=userPts;
+  document.getElementById('hist-pts-val').textContent=userPts+' ⭐';
+  updateRedeemBtns();
+}
+
+function showScreen(s){
+  document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+  document.getElementById('s-'+s).classList.add('active');
+  document.getElementById('nav-'+s).classList.add('active');
+}
+
+function openSheet(s){document.getElementById('sh-'+s).classList.add('show');}
+function closeSheet(s){document.getElementById('sh-'+s).classList.remove('show');}
+
+function selectBike(id){
+  curBikeId=id;
+  const b=BIKES[id];
+  document.getElementById('sh-bike-id').textContent=id;
+  document.getElementById('sh-bike-loc').textContent=lang==='ar'?b.ar:b.en;
+  document.getElementById('sh-bike-dist').textContent=lang==='ar'?b.dist_ar:b.dist_en;
+  openSheet('rent');
+}
+
+function pickDur(el,mins,price){
+  document.querySelectorAll('#sh-rent .dur-tile').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');curDur=mins;curPrice=price;
+  document.getElementById('total-val').textContent=price+(lang==='ar'?' ر.س':' SAR');
+}
+function pickExt(el,mins){
+  document.querySelectorAll('#sh-extend .dur-tile').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');curExt=mins;
+}
+function pickTopup(el,amt){
+  document.querySelectorAll('#sh-topup .dur-tile').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');curTopup=amt;
+}
+function pickPay(el,method){
+  el.closest('.pay-row').querySelectorAll('.pay-tile').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  const cf=document.getElementById('card-flds');
+  if(cf)cf.style.display=method==='card'?'block':'none';
+}
+
+function confirmRent(){
+  closeSheet('rent');
+  document.getElementById('track-bike-nm').textContent=curBikeId;
+  document.getElementById('paid-val').textContent=curPrice+(lang==='ar'?' ر.س':' SAR');
+  timerSecs=curDur*60;
+  startTimer();
+  openSheet('success');
+}
+
+function confirmTopup(){
+  closeSheet('topup');
+  showToast(lang==='ar'?'✅ تم شحن '+curTopup+' ر.س':'✅ Topped up '+curTopup+' SAR');
+}
+
+function confirmExt(){
+  timerSecs+=curExt*60;
+  closeSheet('extend');
+  showToast(lang==='ar'?'✅ تم تمديد +'+curExt+' دقيقة':'✅ Extended +'+curExt+' min');
+}
+
+function startTimer(){
+  if(timerInt)clearInterval(timerInt);
+  timerInt=setInterval(()=>{
+    if(timerSecs>0){
+      timerSecs--;
+      const h=Math.floor(timerSecs/3600),m=Math.floor((timerSecs%3600)/60),s=timerSecs%60;
+      document.getElementById('countdown').textContent=
+        String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      const used=Math.floor((curDur*60-timerSecs)/60);
+      document.getElementById('pts-earn-val').textContent='+'+(Math.floor(used*0.5))+' ⭐';
+    } else {
+      clearInterval(timerInt);
+      addPts(20);
+      showToast(lang==='ar'?'⭐ انتهى الوقت! +20 نقطة':'⭐ Time up! +20 pts');
+    }
+  },1000);
+}
+
+function endRental(){
+  clearInterval(timerInt);
+  const unusedMins=Math.floor(timerSecs/60);
+  const bonus=unusedMins+20;
+  addPts(bonus);
+  timerSecs=0;
+  document.getElementById('countdown').textContent='00:00:00';
+  document.getElementById('end-unused-val').textContent=unusedMins+(lang==='ar'?' دقيقة':' minutes');
+  document.getElementById('end-pts').textContent='+ '+bonus+' '+(lang==='ar'?'نقطة ⭐':'points ⭐');
+  openSheet('end');
+}
+
+function addPts(n){
+  userPts+=n;
+  document.getElementById('pts-disp').textContent=userPts+' ⭐';
+  document.getElementById('loy-pts-big').textContent=userPts;
+  document.getElementById('hist-pts-val').textContent=userPts+' ⭐';
+  document.getElementById('loy-bar').style.width=Math.min((userPts/500)*100,100)+'%';
+  updateRedeemBtns();
+}
+
+function redeem(cost,btn){
+  if(userPts>=cost){addPts(-cost);showToast(lang==='ar'?'🎁 تم الاستبدال!':'🎁 Redeemed!');}
+  else showToast(lang==='ar'?'❌ نقاط غير كافية':'❌ Not enough points');
+}
+function updateRedeemBtns(){
+  [[100,'rb1'],[150,'rb2'],[400,'rb3'],[500,'rb4']].forEach(([c,id])=>{
+    const b=document.getElementById(id);if(b)b.disabled=userPts<c;
+  });
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* A05 availability timer */
+function runA05(){
+  setInterval(()=>{
+    if(a05Secs>0){
+      a05Secs--;
+      const m=Math.floor(a05Secs/60),s=a05Secs%60;
+      const el=document.getElementById('a05-timer');
+      if(el)el.textContent='00:'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    } else {
+      const row=document.getElementById('bike-A05-row');
+      if(!row)return;
+      row.classList.remove('rented');row.style.cursor='pointer';
+      row.onclick=()=>selectBike('A05');
+      const badge=row.querySelector('.bike-id-badge');
+      badge.className='bike-id-badge';
+      const statusRow=row.querySelector('.bike-status-row');
+      statusRow.innerHTML='<span class="pill pill-green dot" id="bs-A05">'+(lang==='ar'?'متاحة':'Available')+'</span>';
+      const priceEl=row.querySelector('.bike-right .bike-price-main');
+      if(priceEl)priceEl.style.color='';
+    }
+  },1000);
+}
+
+/* CHART */
+function buildChart(){
+  const wrap=document.getElementById('chart-bars');
+  if(!wrap)return;
+  const days=lang==='ar'
+    ?['أحد','سبت','جمع','خمي','أرب','ثلا','إثن']
+    :['Sun','Sat','Fri','Thu','Wed','Tue','Mon'];
+  const data=[{a:45,b:20},{a:30,b:35},{a:60,b:15},{a:25,b:40},{a:50,b:20},{a:35,b:30},{a:40,b:25}];
+  wrap.innerHTML='';
+  data.forEach((d,i)=>{
+    const tot=d.a+d.b;const h=80;
+    const col=document.createElement('div');col.className='bar-col';
+    const s1=document.createElement('div');s1.className='bar-seg';
+    s1.style.cssText=`height:${Math.round(d.b/tot*h)}px;background:#D4A8B0;flex-shrink:0`;
+    const s2=document.createElement('div');s2.className='bar-seg';
+    s2.style.cssText=`height:${Math.round(d.a/tot*h)}px;background:var(--yellow);flex-shrink:0`;
+    const lbl=document.createElement('div');lbl.className='bar-date';lbl.textContent=days[i];
+    col.append(s1,s2,lbl);
+    if(i===6)col.classList.add('bar-active');
+    wrap.appendChild(col);
+  });
+}
+
+buildChart();
+runA05();
+updateRedeemBtns();
+startTimer();
+</script>
