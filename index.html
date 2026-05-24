@@ -1,47 +1,845 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CycleFit - حجز الدراجات</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root { --nature-green: #10B981; --energy-lime: #34D399; --dark-forest: #022c22; --white: #F0FDF4; }
-        body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); color: var(--white); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
-        .container { text-align: center; padding: 20px; width: 100%; max-width: 450px; }
-        .bike-card { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--energy-lime); border-radius: 20px; padding: 20px; margin-bottom: 20px; backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.5s ease; }
-        .bike-info h3 { margin: 0; color: var(--energy-lime); }
-        .rent-btn { background: var(--nature-green); color: var(--dark-forest); border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .start-btn { background: linear-gradient(90deg, var(--nature-green), var(--energy-lime)); color: var(--dark-forest); border: none; padding: 18px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; cursor: pointer; width: 100%; }
-        input { background: rgba(255, 255, 255, 0.9); border: none; padding: 15px; width: 100%; margin-bottom: 15px; border-radius: 10px; box-sizing: border-box; text-align: center; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CycleFit – حجز الدراجات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --g: #10B981;
+      --gl: #34D399;
+      --gd: #059669;
+      --bg: #021a12;
+      --bg2: #032a1a;
+      --card: rgba(16,185,129,0.07);
+      --border: rgba(52,211,153,0.2);
+      --text: #e8fef3;
+      --sub: #6ee7b7;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(16,185,129,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 80% 80%, rgba(52,211,153,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 440px;
+      padding: 0 20px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── screens ── */
+    .screen { display: none; animation: slideUp .4s ease; }
+    .screen.active { display: block; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── landing ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+      padding: 40px 0;
+    }
+    .logo-ring {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      border: 2px solid var(--gl);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      animation: pulse-ring 3s ease-in-out infinite;
+    }
+    .logo-ring::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(52,211,153,0.2);
+      animation: pulse-ring 3s ease-in-out infinite .5s;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0.3); }
+      50%       { box-shadow: 0 0 0 14px rgba(52,211,153,0); }
+    }
+    .logo-ring img { width: 70px; }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff 30%, var(--gl));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+    .hero p { color: var(--sub); font-size: .95rem; line-height: 1.7; max-width: 300px; }
+
+    .durations-preview {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .dur-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-size: .8rem;
+      color: var(--gl);
+    }
+
+    /* ── buttons ── */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--g), var(--gl));
+      color: var(--bg);
+    }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,.35); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--sub);
+    }
+    .btn-outline:hover { border-color: var(--gl); color: var(--gl); }
+    .btn-sm {
+      width: auto;
+      padding: 10px 22px;
+      font-size: .9rem;
+      border-radius: 10px;
+    }
+
+    /* ── form ── */
+    .form-section { padding: 40px 0; }
+    .form-section h2 { font-size: 1.6rem; font-weight: 700; color: var(--gl); margin-bottom: 8px; }
+    .form-section p { color: var(--sub); font-size: .9rem; margin-bottom: 28px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: .85rem; color: var(--sub); margin-bottom: 6px; }
+    .field input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color .2s;
+      text-align: right;
+    }
+    .field input:focus { border-color: var(--gl); }
+    .field input::placeholder { color: rgba(110,231,183,.4); }
+
+    .otp-hint {
+      text-align: center;
+      font-size: .8rem;
+      color: var(--sub);
+      margin-bottom: 16px;
+    }
+    .resend-link {
+      background: none; border: none;
+      color: var(--gl); cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-size: .85rem;
+      text-decoration: underline;
+    }
+
+    /* ── bikes screen ── */
+    .bikes-header {
+      padding: 32px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .bikes-header h2 { font-size: 1.4rem; font-weight: 700; color: var(--gl); flex: 1; }
+    .user-badge {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-size: .8rem;
+      color: var(--sub);
+    }
+
+    .bike-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .bike-card:hover:not(.unavailable) { border-color: var(--gl); transform: translateY(-2px); }
+    .bike-card.unavailable { opacity: .5; cursor: not-allowed; }
+    .bike-card.selected { border-color: var(--gl); background: rgba(16,185,129,.14); box-shadow: 0 0 0 1px var(--gl); }
+    .bike-icon {
+      width: 46px; height: 46px;
+      background: rgba(52,211,153,.1);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .bike-card .bike-name { font-weight: 700; font-size: 1rem; }
+    .bike-card .bike-status { font-size: .8rem; margin-top: 2px; }
+    .status-available { color: var(--gl); }
+    .status-rented { color: var(--danger); }
+    .status-pending { color: var(--warn); }
+
+    /* ── duration picker ── */
+    .duration-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,10,6,.85);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadeIn .2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .duration-sheet {
+      background: #061f12;
+      border: 1px solid var(--border);
+      border-radius: 28px 28px 0 0;
+      padding: 28px 24px 40px;
+      width: 100%;
+      max-width: 440px;
+      animation: sheetUp .3s ease;
+    }
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .sheet-handle {
+      width: 40px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0 auto 24px;
+    }
+    .duration-sheet h3 { font-size: 1.2rem; color: var(--gl); margin-bottom: 6px; }
+    .duration-sheet p { font-size: .85rem; color: var(--sub); margin-bottom: 24px; }
+    .dur-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .dur-opt {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .dur-opt:hover { border-color: var(--gl); }
+    .dur-opt.selected { border-color: var(--gl); background: rgba(16,185,129,.15); }
+    .dur-opt .dur-time { font-size: 1.3rem; font-weight: 900; color: var(--text); }
+    .dur-opt .dur-label { font-size: .75rem; color: var(--sub); margin-top: 2px; }
+    .dur-opt .dur-price { font-size: .8rem; color: var(--gl); margin-top: 6px; font-weight: 700; }
+
+    /* ── booking confirm ── */
+    .booking-confirm {
+      text-align: center;
+      padding: 60px 0;
+    }
+    .confirm-icon {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(16,185,129,.15);
+      border: 2px solid var(--gl);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 24px;
+      animation: pulse-ring 2s ease-in-out infinite;
+    }
+    .booking-confirm h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; color: var(--gl); }
+    .booking-confirm p { color: var(--sub); font-size: .9rem; line-height: 1.7; }
+    .booking-detail {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      text-align: right;
+    }
+    .booking-detail .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: .9rem; }
+    .booking-detail .row span:first-child { color: var(--sub); }
+    .booking-detail .row span:last-child { font-weight: 600; color: var(--text); }
+
+    /* ── active rental / timer ── */
+    .active-rental {
+      text-align: center;
+      padding: 40px 0;
+    }
+    .timer-ring {
+      position: relative;
+      width: 180px; height: 180px;
+      margin: 0 auto 28px;
+    }
+    .timer-ring svg { transform: rotate(-90deg); }
+    .timer-ring circle {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+    }
+    .timer-ring .bg-circle { stroke: rgba(52,211,153,.1); }
+    .timer-ring .prog-circle {
+      stroke: var(--gl);
+      transition: stroke-dashoffset .5s linear;
+      filter: drop-shadow(0 0 6px rgba(52,211,153,.6));
+    }
+    .timer-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .timer-time { font-size: 2rem; font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; }
+    .timer-label { font-size: .75rem; color: var(--sub); }
+    .active-rental h3 { font-size: 1.3rem; font-weight: 700; color: var(--gl); margin-bottom: 8px; }
+    .active-rental p { color: var(--sub); font-size: .9rem; }
+    .expired-banner {
+      background: rgba(245,158,11,.1);
+      border: 1px solid rgba(245,158,11,.3);
+      border-radius: 12px;
+      padding: 16px;
+      color: var(--warn);
+      font-size: .9rem;
+      margin: 20px 0;
+      display: none;
+    }
+
+    /* ── toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #061f12;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 22px;
+      font-size: .9rem;
+      transition: transform .3s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.success { border-color: var(--gl); color: var(--gl); }
+    #toast.error { border-color: var(--danger); color: var(--danger); }
+
+    /* ── loading overlay ── */
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.2);
+      border-top-color: var(--bg);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div id="main-content">
-            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Biking.png" width="100" />
-            <h1>CycleFit</h1>
-            <button class="start-btn" id="start-journey-btn">انطلق الآن</button>
-        </div>
-        <div id="login-screen" style="display: none;">
-            <h2 id="login-title" style="color: var(--energy-lime);">تسجيل الدخول</h2>
-            <div id="phone-section">
-                <input type="text" id="full-name" placeholder="الاسم الكامل">
-                <input type="tel" id="phone-number" placeholder="رقم الجوال">
-                <button class="start-btn" id="send-otp-btn">أرسل الرمز</button>
-            </div>
-            <div id="otp-section" style="display: none;">
-                <input type="text" id="otp-input" placeholder="الرمز (1234)">
-                <button class="start-btn" id="verify-btn">دخول</button>
-            </div>
-        </div>
-        <div id="bikes-screen" style="display: none;">
-            <h2 style="color: var(--energy-lime); margin-bottom: 25px;">اختر دراجتك 🌿</h2>
-            <div id="bikes-list"></div>
-        </div>
+<div class="app">
+
+  <!-- ══ SCREEN 1: Landing ══ -->
+  <div class="screen active" id="screen-landing">
+    <div class="hero">
+      <div class="logo-ring">
+        <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Biking.png" alt="bike" />
+      </div>
+      <h1>CycleFit</h1>
+      <p>استأجر دراجتك في ثوانٍ وانطلق في رحلتك الصحية</p>
+      <div class="durations-preview">
+        <span class="dur-chip">⏱ ١٥ دقيقة</span>
+        <span class="dur-chip">⏱ ٣٠ دقيقة</span>
+        <span class="dur-chip">⏱ ساعة كاملة</span>
+        <span class="dur-chip">🌙 وردية ٥–١٠م</span>
+      </div>
+      <button class="btn btn-primary" id="btn-start">ابدأ رحلتك الآن</button>
     </div>
-    <script src="bike-rental-system.js"></script>
+  </div>
+
+  <!-- ══ SCREEN 2: Phone Entry ══ -->
+  <div class="screen" id="screen-phone">
+    <div class="form-section">
+      <h2>أهلاً بك 👋</h2>
+      <p>أدخل بياناتك لتسجيل الدخول أو إنشاء حساب جديد</p>
+      <div class="field">
+        <label>الاسم الكامل</label>
+        <input type="text" id="inp-name" placeholder="مثال: أحمد محمد" />
+      </div>
+      <div class="field">
+        <label>رقم الجوال</label>
+        <input type="tel" id="inp-phone" placeholder="+966XXXXXXXXX" dir="ltr" />
+      </div>
+      <button class="btn btn-primary" id="btn-send-otp">إرسال رمز التحقق</button>
+      <br/><br/>
+      <button class="btn btn-outline" id="btn-back-landing">رجوع</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3: OTP ══ -->
+  <div class="screen" id="screen-otp">
+    <div class="form-section">
+      <h2>رمز التحقق 🔐</h2>
+      <p id="otp-desc">أرسلنا رمزاً مكوناً من 6 أرقام إلى رقمك</p>
+      <div class="field">
+        <input type="text" id="inp-otp" placeholder="••••••" dir="ltr" maxlength="6" inputmode="numeric" style="font-size:1.5rem;letter-spacing:8px;text-align:center;" />
+      </div>
+      <p class="otp-hint">لم يصلك الرمز؟ <button class="resend-link" id="btn-resend">إعادة الإرسال</button></p>
+      <button class="btn btn-primary" id="btn-verify">تحقق ودخول</button>
+      <br/><br/>
+      <button class="btn btn-outline" id="btn-back-phone">تغيير الرقم</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 4: Bikes List ══ -->
+  <div class="screen" id="screen-bikes">
+    <div class="bikes-header">
+      <h2>اختر دراجتك 🚴</h2>
+      <span class="user-badge" id="user-badge">...</span>
+    </div>
+    <div id="bikes-list"></div>
+  </div>
+
+  <!-- ══ SCREEN 5: Booking Confirmed (waiting for worker) ══ -->
+  <div class="screen" id="screen-waiting">
+    <div class="booking-confirm">
+      <div class="confirm-icon">⏳</div>
+      <h2>طلبك قيد المراجعة</h2>
+      <p>سيقوم الموظف بتأكيد حجزك وبدء الجلسة قريباً</p>
+      <div class="booking-detail" id="booking-summary"></div>
+      <p style="font-size:.8rem; color:var(--sub)">ستبدأ الساعة تلقائياً عند تأكيد الموظف</p>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 6: Active Rental + Timer ══ -->
+  <div class="screen" id="screen-active">
+    <div class="active-rental">
+      <h3>جلستك نشطة 🟢</h3>
+      <p id="active-bike-name" style="margin-bottom:24px; color:var(--sub)"></p>
+      <div class="timer-ring">
+        <svg viewBox="0 0 180 180" width="180" height="180">
+          <circle class="bg-circle" cx="90" cy="90" r="82" />
+          <circle class="prog-circle" id="timer-prog" cx="90" cy="90" r="82"
+            stroke-dasharray="515"
+            stroke-dashoffset="0" />
+        </svg>
+        <div class="timer-center">
+          <span class="timer-time" id="timer-display">00:00</span>
+          <span class="timer-label">متبقي</span>
+        </div>
+      </div>
+      <div class="booking-detail" id="active-summary"></div>
+      <div class="expired-banner" id="expired-banner">⚠️ انتهى وقتك! يرجى إعادة الدراجة للموظف</div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ══ Duration Modal ══ -->
+<div class="duration-modal" id="duration-modal" style="display:none;">
+  <div class="duration-sheet">
+    <div class="sheet-handle"></div>
+    <h3>اختر مدة الاستئجار</h3>
+    <p id="dur-bike-label">الدراجة المختارة</p>
+    <div class="dur-options">
+      <div class="dur-opt" data-dur="15" data-label="١٥ دقيقة">
+        <div class="dur-time">١٥</div>
+        <div class="dur-label">دقيقة</div>
+        <div class="dur-price">الدفع عند الاستلام</div>
+      </div>
+      <div class="dur-opt" data-dur="30" data-label="٣٠ دقيقة">
+        <div class="dur-time">٣٠</div>
+        <div class="dur-label">دقيقة</div>
+        <div class="dur-price">الدفع عند الاستلام</div>
+      </div>
+      <div class="dur-opt" data-dur="60" data-label="ساعة كاملة">
+        <div class="dur-time">٦٠</div>
+        <div class="dur-label">دقيقة</div>
+        <div class="dur-price">الدفع عند الاستلام</div>
+      </div>
+      <div class="dur-opt" data-dur="300" data-label="وردية ٥ – ١٠ م">
+        <div class="dur-time">🌙</div>
+        <div class="dur-label">وردية كاملة</div>
+        <div class="dur-price">٥م – ١٠م</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btn-confirm-booking">تأكيد الحجز</button>
+    <br/><br/>
+    <button class="btn btn-outline" id="btn-cancel-dur">إلغاء</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+//  CONFIG – replace with your real values
+// ════════════════════════════════════════
+const SUPABASE_URL     = 'https://weuzlifquyzyjyvguvif.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_vEkF99aOD3eu0mq3C-r-Lg_D5h9qDOe';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+let currentUser   = null;
+let selectedBike  = null;
+let selectedDur   = null;
+let timerInterval = null;
+let realtimeSub   = null;
+let currentBooking = null;
+
+// ════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  setTimeout(() => t.className = '', 3000);
+}
+
+function setLoading(btn, loading, text) {
+  btn.disabled = loading;
+  btn.innerHTML = loading ? `${text} <span class="spinner"></span>` : text;
+}
+
+// ════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════
+document.getElementById('btn-start').addEventListener('click', () => showScreen('screen-phone'));
+document.getElementById('btn-back-landing').addEventListener('click', () => showScreen('screen-landing'));
+document.getElementById('btn-back-phone').addEventListener('click', () => showScreen('screen-phone'));
+
+document.getElementById('btn-send-otp').addEventListener('click', async () => {
+  const name  = document.getElementById('inp-name').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+  if (!name)  return toast('أدخل اسمك الكامل', 'error');
+  if (!phone) return toast('أدخل رقم جوالك', 'error');
+
+  const btn = document.getElementById('btn-send-otp');
+  setLoading(btn, true, 'إرسال رمز التحقق');
+  const { error } = await sb.auth.signInWithOtp({ phone, options: { data: { full_name: name } } });
+  setLoading(btn, false, 'إرسال رمز التحقق');
+
+  if (error) return toast(error.message, 'error');
+  document.getElementById('otp-desc').textContent = `أرسلنا رمزاً إلى ${phone}`;
+  showScreen('screen-otp');
+  toast('تم إرسال الرمز');
+});
+
+document.getElementById('btn-resend').addEventListener('click', async () => {
+  const phone = document.getElementById('inp-phone').value.trim();
+  const { error } = await sb.auth.signInWithOtp({ phone });
+  if (error) return toast(error.message, 'error');
+  toast('تم إعادة الإرسال');
+});
+
+document.getElementById('btn-verify').addEventListener('click', async () => {
+  const phone = document.getElementById('inp-phone').value.trim();
+  const token = document.getElementById('inp-otp').value.trim();
+  if (token.length < 6) return toast('أدخل الرمز كاملاً', 'error');
+
+  const btn = document.getElementById('btn-verify');
+  setLoading(btn, true, 'تحقق ودخول');
+  const { data, error } = await sb.auth.verifyOtp({ phone, token, type: 'sms' });
+  setLoading(btn, false, 'تحقق ودخول');
+
+  if (error) return toast('رمز خاطئ أو منتهي', 'error');
+
+  currentUser = data.user;
+
+  // Upsert profile
+  const name = document.getElementById('inp-name').value.trim();
+  await sb.from('profiles').upsert({ id: currentUser.id, full_name: name, phone }, { onConflict: 'id' });
+
+  toast('مرحباً ' + name + ' 🎉');
+  await checkActiveBooking();
+});
+
+document.getElementById('btn-resend').addEventListener('click', async () => {
+  const phone = document.getElementById('inp-phone').value.trim();
+  await sb.auth.signInWithOtp({ phone });
+  toast('تم إعادة الإرسال');
+});
+
+// ════════════════════════════════════════
+//  CHECK EXISTING SESSION / ACTIVE BOOKING
+// ════════════════════════════════════════
+async function checkActiveBooking() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  currentUser = session.user;
+
+  // Update badge
+  const { data: profile } = await sb.from('profiles').select('full_name').eq('id', currentUser.id).single();
+  if (profile) document.getElementById('user-badge').textContent = profile.full_name;
+
+  // Check if user has an active or pending booking
+  const { data: booking } = await sb.from('bookings')
+    .select('*, bikes(bike_name)')
+    .eq('user_id', currentUser.id)
+    .in('status', ['pending', 'active'])
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (booking) {
+    currentBooking = booking;
+    if (booking.status === 'pending') {
+      showWaitingScreen(booking);
+      subscribeToBooking(booking.id);
+    } else {
+      showActiveScreen(booking);
+    }
+  } else {
+    await loadBikes();
+    showScreen('screen-bikes');
+  }
+}
+
+// ════════════════════════════════════════
+//  BIKES LIST
+// ════════════════════════════════════════
+async function loadBikes() {
+  const list = document.getElementById('bikes-list');
+  list.innerHTML = '<p style="color:var(--sub);text-align:center;padding:20px">جاري التحميل...</p>';
+
+  const { data: bikes, error } = await sb.from('bikes').select('*').order('bike_name');
+  if (error || !bikes?.length) {
+    list.innerHTML = '<p style="color:var(--sub);text-align:center;padding:20px">لا توجد دراجات متاحة حالياً</p>';
+    return;
+  }
+
+  list.innerHTML = '';
+  bikes.forEach(bike => {
+    const avail = bike.status === 'available';
+    const card = document.createElement('div');
+    card.className = `bike-card ${!avail ? 'unavailable' : ''}`;
+    card.dataset.id = bike.id;
+    card.dataset.name = bike.bike_name;
+
+    const statusMap = { available: { cls:'status-available', label:'✅ متاحة' }, rented: { cls:'status-rented', label:'❌ محجوزة' }, pending: { cls:'status-pending', label:'⏳ قيد التأكيد' } };
+    const s = statusMap[bike.status] || statusMap.rented;
+
+    card.innerHTML = `
+      <div class="bike-icon">🚲</div>
+      <div style="flex:1">
+        <div class="bike-name">${bike.bike_name}</div>
+        <div class="bike-status ${s.cls}">${s.label}</div>
+      </div>
+      ${avail ? '<span style="color:var(--gl);font-size:.8rem">اختر ←</span>' : ''}
+    `;
+    if (avail) card.addEventListener('click', () => openDurationModal(bike));
+    list.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════
+//  DURATION MODAL
+// ════════════════════════════════════════
+function openDurationModal(bike) {
+  selectedBike = bike;
+  selectedDur  = null;
+  document.getElementById('dur-bike-label').textContent = `الدراجة: ${bike.bike_name}`;
+  document.querySelectorAll('.dur-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('btn-confirm-booking').disabled = true;
+  document.getElementById('duration-modal').style.display = 'flex';
+}
+
+document.querySelectorAll('.dur-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.dur-opt').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedDur = { minutes: parseInt(opt.dataset.dur), label: opt.dataset.label };
+    document.getElementById('btn-confirm-booking').disabled = false;
+  });
+});
+
+document.getElementById('btn-cancel-dur').addEventListener('click', () => {
+  document.getElementById('duration-modal').style.display = 'none';
+});
+
+// ════════════════════════════════════════
+//  CONFIRM BOOKING
+// ════════════════════════════════════════
+document.getElementById('btn-confirm-booking').addEventListener('click', async () => {
+  if (!selectedBike || !selectedDur) return;
+  const btn = document.getElementById('btn-confirm-booking');
+  setLoading(btn, true, 'تأكيد الحجز');
+
+  const { data: profile } = await sb.from('profiles').select('full_name,phone').eq('id', currentUser.id).single();
+
+  const { data: booking, error } = await sb.from('bookings').insert({
+    user_id:        currentUser.id,
+    bike_id:        selectedBike.id,
+    customer_name:  profile?.full_name || '',
+    customer_phone: profile?.phone || '',
+    duration_mins:  selectedDur.minutes,
+    duration_label: selectedDur.label,
+    status:         'pending'
+  }).select().single();
+
+  setLoading(btn, false, 'تأكيد الحجز');
+  if (error) return toast(error.message, 'error');
+
+  // Mark bike as pending
+  await sb.from('bikes').update({ status: 'pending' }).eq('id', selectedBike.id);
+
+  document.getElementById('duration-modal').style.display = 'none';
+  currentBooking = booking;
+  showWaitingScreen(booking);
+  subscribeToBooking(booking.id);
+  toast('تم إرسال طلب الحجز 🎉');
+});
+
+// ════════════════════════════════════════
+//  WAITING SCREEN
+// ════════════════════════════════════════
+function showWaitingScreen(booking) {
+  document.getElementById('booking-summary').innerHTML = `
+    <div class="row"><span>الدراجة</span><span>${booking.bikes?.bike_name || selectedBike?.bike_name || '—'}</span></div>
+    <div class="row"><span>المدة</span><span>${booking.duration_label}</span></div>
+    <div class="row"><span>الحالة</span><span style="color:var(--warn)">⏳ في انتظار الموظف</span></div>
+  `;
+  showScreen('screen-waiting');
+}
+
+// ════════════════════════════════════════
+//  REALTIME: listen for booking status change
+// ════════════════════════════════════════
+function subscribeToBooking(bookingId) {
+  if (realtimeSub) sb.removeChannel(realtimeSub);
+  realtimeSub = sb.channel(`booking-${bookingId}`)
+    .on('postgres_changes', {
+      event: 'UPDATE', schema: 'public', table: 'bookings',
+      filter: `id=eq.${bookingId}`
+    }, payload => {
+      const updated = payload.new;
+      if (updated.status === 'active') {
+        currentBooking = { ...currentBooking, ...updated };
+        toast('✅ بدأت جلستك! استمتع بركوبتك');
+        showActiveScreen(currentBooking);
+      } else if (updated.status === 'completed') {
+        clearInterval(timerInterval);
+        toast('شكراً! انتهت جلستك', 'success');
+        setTimeout(() => { loadBikes(); showScreen('screen-bikes'); }, 2000);
+      }
+    })
+    .subscribe();
+}
+
+// ════════════════════════════════════════
+//  ACTIVE RENTAL + TIMER
+// ════════════════════════════════════════
+function showActiveScreen(booking) {
+  const bikeName = booking.bikes?.bike_name || booking.bike_name || 'دراجتك';
+  document.getElementById('active-bike-name').textContent = bikeName;
+
+  const startTime   = new Date(booking.started_at).getTime();
+  const totalMs     = booking.duration_mins * 60 * 1000;
+  const circumference = 515; // 2πr for r=82
+
+  document.getElementById('active-summary').innerHTML = `
+    <div class="row"><span>الدراجة</span><span>${bikeName}</span></div>
+    <div class="row"><span>المدة المحددة</span><span>${booking.duration_label}</span></div>
+    <div class="row"><span>بدأت في</span><span>${new Date(booking.started_at).toLocaleTimeString('ar-SA', {hour:'2-digit',minute:'2-digit'})}</span></div>
+  `;
+
+  showScreen('screen-active');
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const elapsed  = Date.now() - startTime;
+    const remaining = Math.max(0, totalMs - elapsed);
+    const pct      = remaining / totalMs;
+
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    document.getElementById('timer-display').textContent =
+      `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+
+    document.getElementById('timer-prog').style.strokeDashoffset =
+      circumference * (1 - pct);
+
+    if (remaining === 0) {
+      clearInterval(timerInterval);
+      document.getElementById('expired-banner').style.display = 'block';
+      document.getElementById('timer-prog').style.stroke = 'var(--warn)';
+    }
+  }, 1000);
+}
+
+// ════════════════════════════════════════
+//  ON LOAD: restore session
+// ════════════════════════════════════════
+window.addEventListener('load', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await checkActiveBooking();
+  }
+});
+</script>
 </body>
 </html>
