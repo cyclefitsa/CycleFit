@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CycleFit - الطاقة الخضراء</title>
+    <title>CycleFit - حجز الدراجات</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -21,50 +21,43 @@
             color: var(--white);
             margin: 0;
             display: flex;
-            align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden;
         }
 
         .container {
             text-align: center;
             padding: 20px;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
         }
 
-        .logo img {
-            filter: drop-shadow(0 0 15px var(--energy-lime));
-            margin-bottom: 10px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin: 10px 0;
-            color: var(--energy-lime);
-        }
-
-        .features {
-            margin: 25px 0;
-            background: rgba(255, 255, 255, 0.05);
+        /* تنسيق كروت الدراجات */
+        .bike-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--energy-lime);
             border-radius: 20px;
             padding: 20px;
+            margin-bottom: 20px;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(52, 211, 153, 0.2);
-        }
-
-        .feature-item {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            transition: 0.3s;
+            animation: fadeIn 0.5s ease;
         }
 
-        .feature-item span {
+        .bike-info h3 { margin: 0; color: var(--energy-lime); }
+        .bike-info p { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; }
+
+        .rent-btn {
             background: var(--nature-green);
-            padding: 8px;
+            color: var(--dark-forest);
+            border: none;
+            padding: 10px 20px;
             border-radius: 12px;
-            margin-left: 15px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .start-btn {
@@ -77,16 +70,6 @@
             border-radius: 50px;
             cursor: pointer;
             width: 100%;
-            transition: 0.3s;
-        }
-
-        #login-screen {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 25px;
-            border: 1px solid var(--energy-lime);
-            display: none;
-            animation: fadeIn 0.5s ease;
         }
 
         input {
@@ -97,47 +80,43 @@
             margin-bottom: 15px;
             border-radius: 10px;
             box-sizing: border-box;
-            font-family: 'Cairo';
-            font-size: 1rem;
             text-align: center;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="main-content">
-        <div class="logo">
-            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Biking.png" alt="Biking" width="120" />
+    <div class="container">
+        <div id="main-content">
+            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Biking.png" width="100" />
             <h1>CycleFit</h1>
-            <p>طاقة الطبيعة في كل حركة</p>
-        </div>
-        <div class="features">
-            <div class="feature-item"><span>🌿</span> <p>تأجير صديق للبيئة</p></div>
-            <div class="feature-item"><span>⚡</span> <p>تتبع ذكي فائق السرعة</p></div>
-        </div>
-        <button class="start-btn" id="start-journey-btn">انطلق الآن</button>
-    </div>
-
-    <div class="container" id="login-screen">
-        <h2 style="color: var(--energy-lime);" id="login-title">مرحباً بك</h2>
-        
-        <div id="phone-section">
-            <p>أدخل بياناتك للبدء</p>
-            <input type="text" id="full-name" placeholder="الاسم الكامل">
-            <input type="tel" id="phone-number" placeholder="رقم الجوال 05xxxxxxxx">
-            <button class="start-btn" id="send-otp-btn">أرسل الرمز</button>
+            <p style="margin-bottom: 30px;">انطلق بطاقة الطبيعة</p>
+            <button class="start-btn" id="start-journey-btn">انطلق الآن</button>
         </div>
 
-        <div id="otp-section" style="display: none;">
-            <p>أدخل رمز التحقق (تجريبي: 1234)</p>
-            <input type="text" id="otp-input" placeholder="----" maxlength="4" style="letter-spacing: 10px; font-size: 2rem;">
-            <button class="start-btn" id="verify-btn">دخول</button>
-            <p id="error-msg" style="color: #ff6b6b; display: none; margin-top: 10px;">الرمز خاطئ، جرب 1234</p>
+        <div id="login-screen" style="display: none;">
+            <h2 id="login-title" style="color: var(--energy-lime);">تسجيل الدخول</h2>
+            <div id="phone-section">
+                <input type="text" id="full-name" placeholder="الاسم الكامل">
+                <input type="tel" id="phone-number" placeholder="رقم الجوال">
+                <button class="start-btn" id="send-otp-btn">أرسل الرمز</button>
+            </div>
+            <div id="otp-section" style="display: none;">
+                <input type="text" id="otp-input" placeholder="الرمز (1234)">
+                <button class="start-btn" id="verify-btn">دخول</button>
+            </div>
+        </div>
+
+        <div id="bikes-screen" style="display: none;">
+            <h2 style="color: var(--energy-lime); margin-bottom: 25px;">اختر دراجتك 🌿</h2>
+            <div id="bikes-list">
+                <p>جاري تحميل الدراجات من القاعدة...</p>
+            </div>
         </div>
     </div>
 
