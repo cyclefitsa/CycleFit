@@ -6,99 +6,25 @@
     <title>CycleFit - حجز الدراجات</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
-        :root {
-            --nature-green: #10B981;
-            --energy-lime: #34D399;
-            --dark-forest: #022c22;
-            --white: #F0FDF4;
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
-            color: var(--white);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-            padding: 20px;
-            width: 100%;
-            max-width: 450px;
-        }
-
-        /* تنسيق كروت الدراجات */
-        .bike-card {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--energy-lime);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.3s;
-            animation: fadeIn 0.5s ease;
-        }
-
+        :root { --nature-green: #10B981; --energy-lime: #34D399; --dark-forest: #022c22; --white: #F0FDF4; }
+        body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); color: var(--white); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
+        .container { text-align: center; padding: 20px; width: 100%; max-width: 450px; }
+        .bike-card { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--energy-lime); border-radius: 20px; padding: 20px; margin-bottom: 20px; backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.5s ease; }
         .bike-info h3 { margin: 0; color: var(--energy-lime); }
-        .bike-info p { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; }
-
-        .rent-btn {
-            background: var(--nature-green);
-            color: var(--dark-forest);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .start-btn {
-            background: linear-gradient(90deg, var(--nature-green), var(--energy-lime));
-            color: var(--dark-forest);
-            border: none;
-            padding: 18px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        input {
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            padding: 15px;
-            width: 100%;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .rent-btn { background: var(--nature-green); color: var(--dark-forest); border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .start-btn { background: linear-gradient(90deg, var(--nature-green), var(--energy-lime)); color: var(--dark-forest); border: none; padding: 18px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; cursor: pointer; width: 100%; }
+        input { background: rgba(255, 255, 255, 0.9); border: none; padding: 15px; width: 100%; margin-bottom: 15px; border-radius: 10px; box-sizing: border-box; text-align: center; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
     <div class="container">
         <div id="main-content">
             <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Biking.png" width="100" />
             <h1>CycleFit</h1>
-            <p style="margin-bottom: 30px;">انطلق بطاقة الطبيعة</p>
             <button class="start-btn" id="start-journey-btn">انطلق الآن</button>
         </div>
-
         <div id="login-screen" style="display: none;">
             <h2 id="login-title" style="color: var(--energy-lime);">تسجيل الدخول</h2>
             <div id="phone-section">
@@ -111,15 +37,11 @@
                 <button class="start-btn" id="verify-btn">دخول</button>
             </div>
         </div>
-
         <div id="bikes-screen" style="display: none;">
             <h2 style="color: var(--energy-lime); margin-bottom: 25px;">اختر دراجتك 🌿</h2>
-            <div id="bikes-list">
-                <p>جاري تحميل الدراجات من القاعدة...</p>
-            </div>
+            <div id="bikes-list"></div>
         </div>
     </div>
-
     <script src="bike-rental-system.js"></script>
 </body>
 </html>
