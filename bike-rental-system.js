@@ -29,45 +29,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (code === "1234") {
             loginScreen.style.display = 'none';
             bikesScreen.style.display = 'block';
-            bikesList.innerHTML = '<p>جاري التحقق من قاعدة البيانات...</p>';
+            bikesList.innerHTML = '<p style="color:var(--energy-lime)">جاري سحب الدراجات من جازان...</p>';
 
             try {
-                // جلب البيانات
-                const { data: bikes, error } = await supabaseClient.from('bikes').select('*');
+                // جلب البيانات مع تحديد الجدول بدقة
+                const { data: bikes, error } = await supabaseClient
+                    .from('bikes') // تأكد أن الاسم في سوبابيس صغير bikes
+                    .select('*');
                 
                 if (error) {
-                    console.error("خطأ من سوبابيس:", error.message);
-                    bikesList.innerHTML = `<p style="color:red">خطأ: ${error.message}</p>`;
+                    console.error("خطأ سوبابيس:", error);
+                    bikesList.innerHTML = `
+                        <div style="background:rgba(255,0,0,0.1); padding:15px; border-radius:10px;">
+                            <p style="color:#ff6b6b">اسم الجدول غير موجود في سوبابيس!</p>
+                            <p style="font-size:0.8rem">الخطأ: ${error.message}</p>
+                            <button onclick="location.reload()" style="background:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer">إعادة محاولة</button>
+                        </div>`;
                     return;
                 }
 
                 if (!bikes || bikes.length === 0) {
-                    bikesList.innerHTML = '<p>لا توجد دراجات في القاعدة حالياً</p>';
+                    bikesList.innerHTML = '<p>الجدول فارغ، أضف دراجات في سوبابيس أولاً</p>';
                     return;
                 }
 
-                console.log("البيانات المستلمة:", bikes);
                 bikesList.innerHTML = ''; 
-
                 bikes.forEach(bike => {
-                    // ملاحظة: هنا نتأكد من أسماء الأعمدة (لو كانت مختلفة في جدولك سيظهر اسم undefined)
-                    const name = bike.bike_name || bike.name || "دراجة";
-                    const status = bike.status || "متاحة";
+                    // نستخدم || لتوقع أي اسم عمود (name أو bike_name)
+                    const bName = bike.bike_name || bike.name || "دراجة كلاسيك";
+                    const bStatus = bike.status === 'available' ? '✅ متاحة' : '❌ محجوزة';
 
                     const card = document.createElement('div');
                     card.className = 'bike-card';
                     card.innerHTML = `
                         <div class="bike-info">
-                            <h3>${name}</h3>
-                            <p>الحالة: ${status}</p>
+                            <h3>${bName}</h3>
+                            <p>${bStatus}</p>
                         </div>
-                        <button class="rent-btn">احجز</button>
+                        <button class="rent-btn" onclick="alert('جاري تجهيز طلبك...')">احجز</button>
                     `;
                     bikesList.appendChild(card);
                 });
+
             } catch (err) {
-                console.error("خطأ غير متوقع:", err);
-                bikesList.innerHTML = '<p>حدث خطأ أثناء تحميل البيانات</p>';
+                bikesList.innerHTML = '<p>حدث خطأ في الشبكة</p>';
             }
         } else {
             alert("الكود خطأ (جرب 1234)");
