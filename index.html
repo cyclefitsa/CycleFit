@@ -577,15 +577,12 @@ document.getElementById('btn-send-otp').addEventListener('click', async () => {
   if (!name)  return toast('أدخل اسمك الكامل', 'error');
   if (!phone) return toast('أدخل رقم جوالك', 'error');
 
-  const btn = document.getElementById('btn-send-otp');
-  setLoading(btn, true, 'إرسال رمز التحقق');
-  const { error } = await sb.auth.signInWithOtp({ phone, options: { data: { full_name: name } } });
-  setLoading(btn, false, 'إرسال رمز التحقق');
-
-  if (error) return toast(error.message, 'error');
-  document.getElementById('otp-desc').textContent = `أرسلنا رمزاً إلى ${phone}`;
+  // TEST MODE: skip real SMS, go straight to OTP screen
+  // Replace this block with real Supabase signInWithOtp once Twilio is connected
+  document.getElementById('otp-desc').textContent = 'أدخل الرمز: 1234 (وضع الاختبار)';
   showScreen('screen-otp');
-  toast('تم إرسال الرمز');
+  toast('وضع الاختبار — الرمز هو 1234');
+  // END TEST MODE
 });
 
 document.getElementById('btn-resend').addEventListener('click', async () => {
