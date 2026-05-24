@@ -1,884 +1,154 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<link href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans@5.0.8/index.css" rel="stylesheet">
-<title>CycleFit</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{--bg:#09090B;--s1:#111113;--s2:#18181B;--s3:#27272A;--br:rgba(255,255,255,.08);--y:#F5C000;--yl:rgba(245,192,0,.13);--yd:#C49800;--gr:#34D399;--re:#F87171;--or:#FB923C;--pu:#A855F7;--tx:#F4F4F5;--tx2:#A1A1AA;--r:20px;--rs:14px}
-body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;direction:rtl;overflow-x:hidden}
-body.en{direction:ltr}
-.wrap{max-width:420px;margin:0 auto;min-height:100vh;position:relative;overflow:hidden}
-.view{display:none;flex-direction:column;min-height:100vh}
-.view.on{display:flex}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CycleFit - الطاقة الخضراء</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --nature-green: #10B981; /* أخضر زمردي */
+            --energy-lime: #34D399;  /* أخضر طاقة */
+            --dark-forest: #064E3B; /* أخضر غامق جداً للخلفية */
+            --white: #F0FDF4;       /* أبيض مائل للخضرة */
+        }
 
-/* ORBS */
-.orb{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0}
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
+            color: var(--white);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-/* SPLASH */
-.splash{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;overflow:hidden;text-align:center}
-.splash-logo{font-size:52px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#F5C000,#FF9500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;position:relative;z-index:1}
-.splash-sub{font-size:14px;color:var(--tx2);font-weight:600;margin-bottom:40px;position:relative;z-index:1}
-.splash-bike{font-size:90px;margin-bottom:28px;animation:float 3s ease-in-out infinite;position:relative;z-index:1}
-@keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
-.splash-feats{display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px;margin-bottom:44px;position:relative;z-index:1}
-.sf{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--br);border-radius:12px;padding:11px 14px;text-align:right}
-body.en .sf{text-align:left}
-.sf-em{font-size:20px;width:30px}
-.sf-tx{font-size:13px;font-weight:600;color:var(--tx2)}
+        .container {
+            text-align: center;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
 
-/* BTNS */
-.btn{width:100%;padding:15px;border-radius:var(--rs);border:none;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:.2s;position:relative;z-index:1}
-.btn-y{background:var(--y);color:#09090B}
-.btn-y:hover{background:var(--yd)}
-.btn-ghost{background:transparent;color:var(--tx2);font-size:13px;font-weight:700;padding:12px;border:none;cursor:pointer;font-family:inherit;width:100%}
-.btn-outline{background:transparent;border:1.5px solid var(--br);color:var(--tx);border-radius:var(--rs);padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%}
+        .logo img {
+            filter: drop-shadow(0 0 15px var(--energy-lime));
+            margin-bottom: 10px;
+        }
 
-/* REG */
-.reg{flex:1;padding:32px 24px;position:relative;overflow:hidden;display:flex;flex-direction:column}
-.back-btn{background:none;border:1.5px solid var(--br);color:var(--tx2);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:18px;margin-bottom:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1}
-.reg-title{font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px;z-index:1;position:relative}
-.reg-sub{font-size:14px;color:var(--tx2);font-weight:500;margin-bottom:32px;line-height:1.7;z-index:1;position:relative}
-.fld-lbl{font-size:11px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;display:block}
-.inp{width:100%;padding:15px 14px;background:var(--s2);border:1.5px solid var(--br);border-radius:var(--rs);font-size:15px;font-family:inherit;color:var(--tx);outline:none;transition:.2s;margin-bottom:12px}
-.inp:focus{border-color:var(--y);background:rgba(245,192,0,.04)}
-.inp::placeholder{color:var(--tx2)}
-.inp-ph-wrap{position:relative;margin-bottom:12px}
-.ph-pre{position:absolute;top:50%;transform:translateY(-50%);right:14px;font-size:13px;font-weight:700;color:var(--tx2);z-index:1;pointer-events:none}
-body.en .ph-pre{right:auto;left:14px}
-.inp-ph{padding-right:90px}
-body.en .inp-ph{padding-right:14px;padding-left:90px}
-.inp-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.inp-2col .inp{margin-bottom:0}
+        h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            color: var(--energy-lime);
+            text-shadow: 0 2px 10px rgba(52, 211, 153, 0.3);
+        }
 
-/* OTP */
-.otp-row{display:flex;gap:9px;justify-content:center;margin-bottom:24px;direction:ltr}
-.ob{width:50px;height:58px;background:var(--s2);border:1.5px solid var(--br);border-radius:12px;text-align:center;font-size:24px;font-weight:900;color:var(--tx);font-family:inherit;outline:none;transition:.2s}
-.ob:focus{border-color:var(--y);background:var(--yl)}
-.otp-hint{background:var(--yl);border:1px solid rgba(245,192,0,.3);border-radius:10px;padding:10px 16px;margin-bottom:22px;font-size:13px;font-weight:700;color:var(--yd);text-align:center}
+        .features {
+            margin: 30px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+        }
 
-/* TUTORIAL */
-.tut-slides{flex:1;position:relative;overflow:hidden}
-.ts{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;opacity:0;transform:translateX(50px);transition:.4s cubic-bezier(.4,0,.2,1);pointer-events:none}
-.ts.on{opacity:1;transform:none;pointer-events:auto}
-.ts.prev{opacity:0;transform:translateX(-50px)}
-.ts-icon{width:130px;height:130px;border-radius:36px;display:flex;align-items:center;justify-content:center;font-size:58px;margin:0 auto 30px;position:relative}
-.ts-icon::after{content:'';position:absolute;inset:-1px;border-radius:37px;border:1px solid rgba(255,255,255,.08)}
-.ts-title{font-size:26px;font-weight:900;margin-bottom:12px;letter-spacing:-.3px}
-.ts-desc{font-size:14px;color:var(--tx2);font-weight:500;line-height:1.75;max-width:280px}
-.tut-dots{display:flex;gap:6px;justify-content:center;padding:20px 0}
-.tdot{width:8px;height:8px;border-radius:4px;background:var(--s3);transition:.35s}
-.tdot.on{background:var(--y);width:26px}
-.tut-footer{padding:16px 24px 32px;display:flex;flex-direction:column;gap:10px}
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
 
-/* APP */
-.app-hdr{padding:16px 18px 4px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.app-logo{font-size:20px;font-weight:900;background:linear-gradient(135deg,#F5C000,#FF9500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.app-usr{display:flex;align-items:center;gap:8px}
-.ava{width:34px;height:34px;background:var(--yl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:var(--yd);border:1.5px solid rgba(245,192,0,.3);flex-shrink:0}
-.usr-nm{font-size:12px;font-weight:700;color:var(--tx2)}
-.app-body{flex:1;overflow-y:auto;padding:8px 16px 100px;scrollbar-width:none}
-.app-body::-webkit-scrollbar{display:none}
-.scr{display:none}
-.scr.on{display:block}
+        .feature-item span {
+            background: var(--nature-green);
+            padding: 8px;
+            border-radius: 12px;
+            margin-left: 15px;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+        }
 
-/* NAVBAR */
-.nbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;padding:10px 16px 18px;background:linear-gradient(to top,var(--bg) 55%,transparent);z-index:50;pointer-events:none}
-.ninner{background:rgba(17,17,19,.95);border-radius:22px;padding:6px;display:flex;border:1px solid var(--br);backdrop-filter:blur(20px);pointer-events:auto}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:16px;cursor:pointer;font-size:10px;font-weight:700;color:var(--tx2);transition:.2s}
-.ni svg{width:20px;height:20px}
-.ni.on{background:var(--y);color:var(--bg)}
+        .start-btn {
+            background: linear-gradient(90deg, var(--nature-green), var(--energy-lime));
+            color: var(--dark-forest);
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
 
-/* BALANCE HERO */
-.bal-hero{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:22px;margin-bottom:12px;position:relative;overflow:hidden}
-.bh-glow{position:absolute;width:180px;height:180px;background:var(--y);opacity:.05;border-radius:50%;top:-70px;right:-50px;pointer-events:none}
-.bh-lbl{font-size:12px;color:var(--tx2);font-weight:700;margin-bottom:6px}
-.bh-amt{font-size:38px;font-weight:900;letter-spacing:-1.5px}
-.bh-amt small{font-size:16px;font-weight:600;color:var(--tx2)}
-.bh-pts{display:inline-flex;align-items:center;gap:6px;background:var(--yl);border-radius:30px;padding:5px 13px;font-size:12px;font-weight:800;color:var(--yd);margin-top:12px}
-.bh-pts .dot{width:7px;height:7px;background:var(--y);border-radius:50%}
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(52, 211, 153, 0.5);
+        }
 
-/* QA */
-.qa-g{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
-.qa{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:16px 14px;cursor:pointer;transition:.15s}
-.qa:hover{border-color:var(--y);background:var(--yl)}
-.qa-ic{font-size:26px;margin-bottom:8px}
-.qa-lb{font-size:12px;font-weight:800;color:var(--tx2)}
-.sec-hd{font-size:15px;font-weight:800;margin-bottom:10px;letter-spacing:-.3px}
+        #login-screen {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 25px;
+            border: 1px solid var(--energy-lime);
+        }
 
-/* BIKES */
-.bk{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:14px 15px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.15s}
-.bk:hover{border-color:var(--y);transform:translateY(-1px)}
-.bk.locked{cursor:default}
-.bk.locked:hover{border-color:var(--br);transform:none}
-.bk-badge{width:48px;height:48px;border-radius:12px;background:var(--y);color:var(--bg);font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:.3px}
-.bk-badge.dim{background:var(--s3);color:var(--tx2)}
-.bk-mid{flex:1;min-width:0}
-.bk-nm{font-size:14px;font-weight:800}
-.bk-loc{font-size:11px;color:var(--tx2);font-weight:600;margin-top:2px}
-.bk-row{display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap}
-.chip{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800}
-.chip::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
-.cg{background:rgba(52,211,153,.1);color:var(--gr)}
-.co{background:rgba(251,146,60,.1);color:var(--or)}
-.avl-t{font-size:12px;font-weight:900;color:var(--or);font-variant-numeric:tabular-nums}
-.bk-rt{text-align:left;flex-shrink:0}
-body.en .bk-rt{text-align:right}
-.bk-price{font-size:14px;font-weight:800}
-.bk-psub{font-size:10px;color:var(--tx2);font-weight:600;margin-top:1px}
+        input {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px;
+            width: 90%;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            font-family: 'Cairo';
+            font-size: 1rem;
+        }
 
-/* TRACK */
-.tr-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
-.tr-glow{position:absolute;width:150px;height:150px;background:var(--y);opacity:.06;border-radius:50%;top:-50px;right:-40px;pointer-events:none}
-.tr-tag{font-size:10px;font-weight:900;color:var(--y);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
-.tr-bk{font-size:18px;font-weight:900;margin-bottom:14px}
-.tr-lbl{font-size:11px;color:var(--tx2);font-weight:700}
-.tr-timer{font-size:60px;font-weight:900;letter-spacing:-3px;font-variant-numeric:tabular-nums;line-height:1;margin:4px 0 6px}
-.no-ref{display:inline-flex;align-items:center;gap:5px;background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--or);font-weight:700;margin-top:8px}
-.map-box{background:rgba(255,255,255,.03);border-radius:14px;height:140px;position:relative;overflow:hidden;margin:14px 0 0;border:1px solid var(--br)}
-.mg{position:absolute;inset:0;width:100%;height:100%;opacity:.12}
-.pin{position:absolute;width:12px;height:12px;background:var(--y);border-radius:50%;border:2px solid #000;top:38%;left:32%;animation:drift 7s ease-in-out infinite;z-index:2}
-@keyframes drift{0%{top:38%;left:32%}33%{top:52%;left:50%}66%{top:30%;left:64%}100%{top:38%;left:32%}}
-.pring{position:absolute;width:30px;height:30px;border:1.5px solid rgba(245,192,0,.5);border-radius:50%;top:calc(38% - 9px);left:calc(32% - 9px);animation:pr 2s infinite;z-index:1}
-@keyframes pr{0%{transform:scale(1);opacity:1}100%{transform:scale(2.5);opacity:0}}
-.mlbl{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:var(--tx);font-size:10px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:700;z-index:3;border:1px solid var(--br)}
-.st4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.sc{background:rgba(255,255,255,.05);border-radius:10px;padding:10px}
-.sc-l{font-size:10px;color:var(--tx2);font-weight:700}
-.sc-v{font-size:15px;font-weight:800;margin-top:2px}
-
-/* LOYALTY */
-.loy{background:linear-gradient(135deg,#130A26,#1E0A3C);border:1px solid rgba(168,85,247,.2);border-radius:var(--r);padding:22px;margin-bottom:12px;position:relative;overflow:hidden}
-.loy-orb{position:absolute;width:160px;height:160px;background:rgba(168,85,247,.12);border-radius:50%;bottom:-50px;left:-40px;filter:blur(40px)}
-.loy-tier{display:inline-block;background:rgba(168,85,247,.2);color:#C084FC;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:900;margin-bottom:8px}
-.loy-pts{font-size:50px;font-weight:900;letter-spacing:-2px;position:relative;z-index:1}
-.prog-bg{background:rgba(255,255,255,.12);border-radius:20px;height:6px;margin:14px 0 5px}
-.prog-f{background:linear-gradient(90deg,#A855F7,#F5C000);border-radius:20px;height:6px;transition:width 1s}
-.tier-l{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.45);font-weight:700}
-.rw-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.rw{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:14px;text-align:center;transition:.15s}
-.rw:hover{border-color:rgba(168,85,247,.4)}
-.rw-em{font-size:30px;margin-bottom:8px}
-.rw-nm{font-size:12px;font-weight:800;margin-bottom:3px}
-.rw-pt{font-size:11px;color:var(--tx2);font-weight:700;margin-bottom:8px}
-.rw-b{width:100%;padding:8px;background:var(--y);color:var(--bg);border:none;border-radius:8px;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit;transition:.15s}
-.rw-b:disabled{background:var(--s3);color:var(--tx2);cursor:not-allowed}
-
-/* HISTORY */
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.sb{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:14px}
-.sb-l{font-size:11px;color:var(--tx2);font-weight:700;margin-bottom:4px}
-.sb-v{font-size:22px;font-weight:900;letter-spacing:-.5px}
-.sb-u{font-size:12px;font-weight:600;color:var(--tx2)}
-.hc{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:11px}
-.hc-b{width:38px;height:38px;background:var(--yl);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--yd);flex-shrink:0}
-.hc-m{flex:1}
-.hc-n{font-size:13px;font-weight:800}
-.hc-s{font-size:11px;color:var(--tx2);font-weight:600;margin-top:2px}
-.hc-r{text-align:left}
-body.en .hc-r{text-align:right}
-.hc-c{font-size:13px;font-weight:800}
-.hc-p{font-size:11px;color:var(--yd);font-weight:700;margin-top:2px}
-
-/* SHEETS */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.ov.on{display:flex}
-.sheet{background:var(--s1);border-radius:24px 24px 0 0;padding:0 20px 32px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;border:1px solid var(--br);border-bottom:none;position:relative}
-.sh-hdl{width:40px;height:4px;background:var(--s3);border-radius:20px;margin:14px auto 20px}
-.sh-t{font-size:17px;font-weight:900;margin-bottom:18px}
-.xbtn{position:absolute;top:16px;left:16px;width:30px;height:30px;background:var(--s3);border:none;border-radius:50%;cursor:pointer;color:var(--tx2);font-size:14px;display:flex;align-items:center;justify-content:center}
-body.en .xbtn{left:auto;right:16px}
-.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.dt{background:var(--s2);border:2px solid transparent;border-radius:var(--rs);padding:13px;text-align:center;cursor:pointer;transition:.15s}
-.dt:hover,.dt.s{border-color:var(--y);background:var(--yl)}
-.dt .dtt{font-size:13px;font-weight:800;margin-bottom:3px}
-.dt .dtp{font-size:20px;font-weight:900;margin-bottom:3px}
-.dt .dtn{font-size:10px;color:var(--tx2);font-weight:700}
-.dt.s .dtn{color:var(--yd)}
-.pay-r{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.pt{flex:1;min-width:70px;padding:10px;background:var(--s2);border:2px solid transparent;border-radius:var(--rs);text-align:center;cursor:pointer;font-size:12px;font-weight:700;transition:.15s}
-.pt.s{border-color:var(--y);background:var(--yl);color:var(--yd)}
-.tot{display:flex;justify-content:space-between;align-items:center;background:var(--s2);border-radius:var(--rs);padding:14px;margin-bottom:14px;border:1px solid var(--br)}
-.tot-l{font-size:13px;font-weight:700;color:var(--tx2)}
-.tot-v{font-size:24px;font-weight:900}
-.pol{background:rgba(251,146,60,.09);border:1px solid rgba(251,146,60,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--or);font-weight:600;line-height:1.6}
-.cf{display:none}
-
-/* SUCCESS/END */
-.suc{text-align:center;padding:24px 0}
-.suc-em{font-size:64px;margin-bottom:14px;animation:pop .45s ease}
-@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.15)}100%{transform:scale(1)}}
-.suc-t{font-size:22px;font-weight:900;margin-bottom:8px}
-.suc-s{font-size:13px;color:var(--tx2);font-weight:600;margin-bottom:20px;line-height:1.6}
-.pts-box{background:var(--yl);border-radius:var(--rs);padding:16px;margin-bottom:16px;border:1px solid rgba(245,192,0,.25)}
-.pb-l{font-size:12px;color:var(--yd);font-weight:800;margin-bottom:4px}
-.pb-n{font-size:38px;font-weight:900;color:var(--y)}
-.pb-note{font-size:11px;color:var(--tx2);font-weight:600;margin-top:4px}
-
-/* MANAGER */
-.mgr-hdr{background:var(--s1);border-bottom:1px solid var(--br);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
-.mgr-back{background:none;border:none;color:var(--tx2);font-size:20px;cursor:pointer;padding:4px}
-.mgr-ttl{font-size:16px;font-weight:900;flex:1}
-.mgr-badge{background:var(--yl);color:var(--yd);font-size:10px;font-weight:900;padding:3px 10px;border-radius:20px}
-.mgr-tabs{display:flex;padding:10px 16px;gap:6px;overflow-x:auto;scrollbar-width:none;background:var(--s1);border-bottom:1px solid var(--br);flex-shrink:0}
-.mgr-tabs::-webkit-scrollbar{display:none}
-.mt{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;color:var(--tx2);background:transparent;border:1px solid var(--br);font-family:inherit;transition:.15s}
-.mt.on{background:var(--y);color:var(--bg);border-color:var(--y)}
-.mgr-body{flex:1;overflow-y:auto;padding:16px;scrollbar-width:none}
-.mgr-body::-webkit-scrollbar{display:none}
-
-/* MGR CARDS */
-.og{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.oc{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:14px}
-.oc-em{font-size:22px;margin-bottom:6px}
-.oc-n{font-size:28px;font-weight:900;letter-spacing:-.5px}
-.oc-l{font-size:11px;color:var(--tx2);font-weight:700;margin-top:3px}
-.oc-tr{font-size:11px;font-weight:800;margin-top:6px}
-.tup{color:var(--gr)}.tdn{color:var(--re)}
-.cb{background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);padding:16px;margin-bottom:12px}
-.cb-t{font-size:14px;font-weight:800;margin-bottom:14px}
-.brow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.br-l{font-size:12px;font-weight:700;color:var(--tx2);width:34px;flex-shrink:0;text-align:left}
-body.en .br-l{text-align:right}
-.br-tr{flex:1;background:var(--s3);border-radius:4px;height:10px}
-.br-f{height:10px;border-radius:4px;background:var(--y);transition:width 1s}
-.br-v{font-size:12px;font-weight:800;width:40px;text-align:right;flex-shrink:0;color:var(--tx2)}
-body.en .br-v{text-align:left}
-.mr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);margin-bottom:8px}
-.mr-l{font-size:13px;font-weight:700;color:var(--tx2)}
-.mr-v{font-size:16px;font-weight:900}
-.rr{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--br);border-radius:var(--rs);margin-bottom:8px}
-.rr-id{font-size:11px;font-weight:900;color:var(--yd);background:var(--yl);padding:3px 8px;border-radius:8px;flex-shrink:0}
-.rr-inf{flex:1;min-width:0}
-.rr-n{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rr-s{font-size:11px;color:var(--tx2);font-weight:600;margin-top:1px}
-.rr-rt{text-align:left;flex-shrink:0}
-body.en .rr-rt{text-align:right}
-.rr-p{font-size:13px;font-weight:800}
-.rtag{font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;margin-top:2px;display:inline-block}
-.tf{background:rgba(52,211,153,.12);color:var(--gr)}
-.te{background:rgba(168,85,247,.12);color:var(--pu)}
-.tx2c{background:rgba(251,146,60,.12);color:var(--or)}
-
-/* MGR LOGIN */
-.pin-row{display:flex;gap:10px;justify-content:center;margin:16px 0;direction:ltr}
-.pb{width:54px;height:62px;background:var(--s2);border:2px solid var(--br);border-radius:12px;text-align:center;font-size:26px;font-weight:900;color:var(--tx);font-family:inherit;outline:none;transition:.2s}
-.pb:focus{border-color:var(--y)}
-
-/* TOAST */
-.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-50px);background:rgba(17,17,19,.95);color:var(--tx);padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;z-index:400;opacity:0;transition:.35s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;border:1px solid var(--br);box-shadow:0 4px 24px rgba(0,0,0,.5)}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-</style>
+        .admin-login {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--energy-lime);
+            cursor: pointer;
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
-<div class="wrap" id="wrap">
 
-<!-- ====== SPLASH ====== -->
-<div class="view on" id="v-splash">
-  <div class="splash">
-    <div class="orb" style="width:220px;height:220px;background:rgba(245,192,0,.15);top:-80px;right:-60px"></div>
-    <div class="orb" style="width:180px;height:180px;background:rgba(251,146,60,.1);bottom:80px;left:-60px"></div>
-    <div class="splash-bike">🚴</div>
-    <div class="splash-logo">CycleFit</div>
-    <div class="splash-sub" id="sp-sub">جازان · أبوعريش — تأجير الدراجات الذكي</div>
-    <div class="splash-feats">
-      <div class="sf"><div class="sf-em">🔒</div><div class="sf-tx" id="spf1">دفع آمن وسريع</div></div>
-      <div class="sf"><div class="sf-em">📍</div><div class="sf-tx" id="spf2">تتبع لحظي للدراجة</div></div>
-      <div class="sf"><div class="sf-em">⭐</div><div class="sf-tx" id="spf3">نقاط ولاء لكل دقيقة غير مستخدمة</div></div>
-    </div>
-    <button class="btn btn-y" onclick="gv('v-phone')" id="sp-btn">ابدأ رحلتك 🚲</button>
-    <button class="btn-ghost" onclick="goMgr()" id="sp-mgr" style="margin-top:6px">دخول المدير</button>
-  </div>
-</div>
-
-<!-- ====== PHONE ====== -->
-<div class="view" id="v-phone">
-  <div class="reg">
-    <div class="orb" style="width:200px;height:200px;background:rgba(245,192,0,.1);top:-80px;right:-60px"></div>
-    <button class="back-btn" onclick="gv('v-splash')">←</button>
-    <div class="reg-title" id="ph-t">أدخل رقمك</div>
-    <div class="reg-sub" id="ph-s">سنرسل رمز التحقق على واتساب أو SMS لتأكيد هويتك</div>
-    <div class="inp-ph-wrap">
-      <div class="ph-pre">🇸🇦 +966</div>
-      <input class="inp inp-ph" id="phi" type="tel" placeholder="5xxxxxxxx" maxlength="9" oninput="chkPh()">
-    </div>
-    <button class="btn btn-y" id="ph-btn" onclick="sendOtp()" style="opacity:.4;pointer-events:none;margin-top:8px" id="ph-btn">إرسال الرمز</button>
-  </div>
-</div>
-
-<!-- ====== OTP ====== -->
-<div class="view" id="v-otp">
-  <div class="reg">
-    <div class="orb" style="width:200px;height:200px;background:rgba(245,192,0,.1);top:-80px;right:-60px"></div>
-    <button class="back-btn" onclick="gv('v-phone')">←</button>
-    <div class="reg-title" id="ot-t">رمز التحقق</div>
-    <div class="reg-sub" id="ot-s">أدخل الرمز المرسل لرقمك</div>
-    <div class="otp-hint">🔐 <span id="ot-demo-lbl">رمز تجريبي:</span> <strong id="ot-code">------</strong></div>
-    <div class="otp-row">
-      <input class="ob" maxlength="1" id="o0" oninput="oi(this,0)">
-      <input class="ob" maxlength="1" id="o1" oninput="oi(this,1)">
-      <input class="ob" maxlength="1" id="o2" oninput="oi(this,2)">
-      <input class="ob" maxlength="1" id="o3" oninput="oi(this,3)">
-      <input class="ob" maxlength="1" id="o4" oninput="oi(this,4)">
-      <input class="ob" maxlength="1" id="o5" oninput="oi(this,5)">
-    </div>
-    <button class="btn btn-y" id="ot-btn" onclick="verOtp()" style="opacity:.4;pointer-events:none">تحقق</button>
-  </div>
-</div>
-
-<!-- ====== NAME ====== -->
-<div class="view" id="v-name">
-  <div class="reg">
-    <div class="orb" style="width:200px;height:200px;background:rgba(245,192,0,.1);top:-80px;right:-60px"></div>
-    <div class="reg-title" id="nm-t">مرحباً بك 👋</div>
-    <div class="reg-sub" id="nm-s">أخبرنا باسمك — لا يجب أن يكون فريداً</div>
-    <div class="inp-2col">
-      <div>
-        <label class="fld-lbl" id="nm-fl">الاسم الأول</label>
-        <input class="inp" id="fni" type="text" placeholder="محمد" oninput="chkNm()" style="margin-bottom:0">
-      </div>
-      <div>
-        <label class="fld-lbl" id="nm-ll">اسم العائلة</label>
-        <input class="inp" id="lni" type="text" placeholder="الغامدي" oninput="chkNm()" style="margin-bottom:0">
-      </div>
-    </div>
-    <div style="background:var(--yl);border-radius:10px;padding:10px 14px;margin:14px 0;font-size:12px;color:var(--yd);font-weight:700;line-height:1.5" id="nm-note">💡 يمكن أن يكون اسمك مشتركاً مع مستخدمين آخرين — هذا طبيعي!</div>
-    <button class="btn btn-y" id="nm-btn" onclick="saveNm()" style="opacity:.4;pointer-events:none">متابعة ←</button>
-  </div>
-</div>
-
-<!-- ====== TUTORIAL ====== -->
-<div class="view" id="v-tut">
-  <div class="tut-slides" id="tut-wrap"></div>
-  <div class="tut-dots" id="tut-dots"></div>
-  <div class="tut-footer">
-    <button class="btn btn-y" id="tut-next" onclick="tutNext()">التالي</button>
-    <button class="btn-ghost" onclick="goApp()" id="tut-skip">تخطي</button>
-  </div>
-</div>
-
-<!-- ====== APP ====== -->
-<div class="view" id="v-app">
-  <div class="app-hdr">
-    <div class="app-logo">CycleFit</div>
-    <div class="app-usr">
-      <div class="usr-nm" id="hdr-nm">مرحباً</div>
-      <div class="ava" id="hdr-av">م</div>
-    </div>
-  </div>
-  <div class="app-body">
-    <!-- HOME -->
-    <div class="scr on" id="sc-home">
-      <div class="bal-hero">
-        <div class="bh-glow"></div>
-        <div class="bh-lbl" id="lbl-bal">رصيدك</div>
-        <div class="bh-amt">150.00 <small>ر.س</small></div>
-        <div class="bh-pts"><div class="dot"></div><span id="lbl-pts-t">نقاط الولاء</span>&nbsp;<strong id="pts-disp">320 ⭐</strong></div>
-      </div>
-      <div class="qa-g">
-        <div class="qa" onclick="openOv('ov-rent')"><div class="qa-ic">🚲</div><div class="qa-lb" id="qa1">استأجر الآن</div></div>
-        <div class="qa" onclick="ss('track')"><div class="qa-ic">📍</div><div class="qa-lb" id="qa2">تتبع</div></div>
-        <div class="qa" onclick="openOv('ov-topup')"><div class="qa-ic">💳</div><div class="qa-lb" id="qa3">شحن الرصيد</div></div>
-        <div class="qa" onclick="ss('loyalty')"><div class="qa-ic">⭐</div><div class="qa-lb" id="qa4">الولاء</div></div>
-      </div>
-      <div class="sec-hd" id="lbl-avail">الدراجات المتاحة</div>
-      <div id="bikes-list"></div>
-    </div>
-    <!-- TRACK -->
-    <div class="scr" id="sc-track">
-      <div class="tr-card">
-        <div class="tr-glow"></div>
-        <div class="tr-tag" id="tr-tg">الإيجار النشط</div>
-        <div class="tr-bk" id="tr-bk">A01</div>
-        <div class="tr-lbl" id="tr-lbl">الوقت المتبقي</div>
-        <div class="tr-timer" id="countdown">00:15:00</div>
-        <div class="no-ref">⚠️ <span id="no-ref">لا استرداد — الوقت المتبقي = نقاط ولاء</span></div>
-        <div class="map-box">
-          <svg class="mg" viewBox="0 0 300 140"><line x1="0" y1="35" x2="300" y2="35" stroke="white" stroke-width=".7"/><line x1="0" y1="70" x2="300" y2="70" stroke="white" stroke-width=".7"/><line x1="0" y1="105" x2="300" y2="105" stroke="white" stroke-width=".7"/><line x1="75" y1="0" x2="75" y2="140" stroke="white" stroke-width=".7"/><line x1="150" y1="0" x2="150" y2="140" stroke="white" stroke-width=".7"/><line x1="225" y1="0" x2="225" y2="140" stroke="white" stroke-width=".7"/></svg>
-          <div class="pring"></div>
-          <div class="pin"></div>
-          <div class="mlbl" id="mlbl">📍 أبوعريش — يتحرك الآن</div>
+    <div class="container" id="main-content">
+        <div class="logo">
+            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Person%20Biking.png" alt="Biking" width="120" />
+            <h1>CycleFit</h1>
+            <p>جازان — طاقة الطبيعة في كل حركة</p>
         </div>
-        <div class="st4">
-          <div class="sc"><div class="sc-l" id="sc-sp">السرعة</div><div class="sc-v">11 km/h</div></div>
-          <div class="sc"><div class="sc-l" id="sc-di">المسافة</div><div class="sc-v">1.8 km</div></div>
-          <div class="sc"><div class="sc-l" id="sc-pa">المدفوع</div><div class="sc-v" id="v-paid">10 ر.س</div></div>
-          <div class="sc"><div class="sc-l" id="sc-pt">نقاط</div><div class="sc-v" id="v-pts">+0 ⭐</div></div>
+
+        <div class="features">
+            <div class="feature-item">
+                <span>🌿</span> <p>تأجير صديق للبيئة</p>
+            </div>
+            <div class="feature-item">
+                <span>⚡</span> <p>تتبع ذكي فائق السرعة</p>
+            </div>
+            <div class="feature-item">
+                <span>🍃</span> <p>نقاط ولاء خضراء متجددة</p>
+            </div>
         </div>
-      </div>
-      <div class="pol" id="pol-hint">💡 إنهاء مبكر؟ كل دقيقة غير مستخدمة = نقطة ولاء تُضاف فوراً!</div>
-      <button class="btn btn-y" onclick="endRental()" id="btn-end" style="margin-bottom:8px">إنهاء الإيجار</button>
-      <button class="btn-outline" onclick="openOv('ov-ext')" id="btn-ext">تمديد الوقت +</button>
+
+        <button class="start-btn" id="start-journey-btn">انطلق الآن</button>
+        <p class="admin-login">دخول الإدارة</p>
     </div>
-    <!-- LOYALTY -->
-    <div class="scr" id="sc-loyalty">
-      <div class="loy">
-        <div class="loy-orb"></div>
-        <div class="loy-tier" id="loy-tier">🥈 الفضية</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.45);font-weight:700;margin-bottom:4px" id="lbl-tpts">إجمالي نقاطك</div>
-        <div class="loy-pts" id="loy-pts">320</div>
-        <div class="prog-bg"><div class="prog-f" id="prog-f" style="width:64%"></div></div>
-        <div class="tier-l"><span id="tl-b">برونز 0</span><span id="tl-s">فضة 300</span><span id="tl-g">ذهب 500</span></div>
-        <div style="font-size:12px;color:rgba(255,255,255,.45);font-weight:700;margin-top:8px" id="lbl-tog">180 نقطة للذهبي</div>
-      </div>
-      <div style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#C084FC;font-weight:600;line-height:1.6" id="pts-pol">⭐ كل دقيقة غير مستخدمة = نقطة ولاء — لا تضيع لحظة من مالك!</div>
-      <div class="sec-hd" id="lbl-rw" style="margin-bottom:10px">المكافآت</div>
-      <div class="rw-grid" id="rw-grid"></div>
-      <div class="sec-hd" id="lbl-earn" style="margin-bottom:10px">كيف تكسب النقاط؟</div>
-      <div id="earn-list"></div>
+
+    <div id="login-screen" style="display: none; width: 350px;">
+        <h2 style="color: var(--energy-lime);">مرحباً بك مجدداً</h2>
+        <p>سجل دخولك لتبدأ رحلتك</p>
+        <input type="text" id="full-name" placeholder="الاسم الكامل">
+        <input type="tel" id="phone-number" placeholder="رقم الجوال 05xxxxxxxx">
+        <button class="start-btn" id="send-otp">أرسل الرمز</button>
     </div>
-    <!-- HISTORY -->
-    <div class="scr" id="sc-history">
-      <div class="sg" id="hist-sg"></div>
-      <div id="hist-list"></div>
-    </div>
-  </div>
-  <div class="nbar">
-    <div class="ninner">
-      <div class="ni on" onclick="ss('home')" id="ni-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span id="ni-h">الرئيسية</span></div>
-      <div class="ni" onclick="ss('track')" id="ni-track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="ni-t">تتبع</span></div>
-      <div class="ni" onclick="ss('loyalty')" id="ni-loy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span id="ni-l">الولاء</span></div>
-      <div class="ni" onclick="ss('history')" id="ni-hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="ni-hi">السجل</span></div>
-    </div>
-  </div>
-</div>
 
-<!-- ====== MANAGER ====== -->
-<div class="view" id="v-mgr">
-  <div class="mgr-hdr">
-    <button class="mgr-back" onclick="gv('v-splash')">←</button>
-    <div class="mgr-ttl" id="mgr-ttl">لوحة تحكم المدير</div>
-    <div class="mgr-badge">CycleFit</div>
-  </div>
-  <div class="mgr-tabs">
-    <button class="mt on" onclick="mgrTab('ov')" id="mt-ov">نظرة عامة</button>
-    <button class="mt" onclick="mgrTab('bk')" id="mt-bk">الدراجات</button>
-    <button class="mt" onclick="mgrTab('an')" id="mt-an">التحليلات</button>
-    <button class="mt" onclick="mgrTab('rd')" id="mt-rd">سجل الرحلات</button>
-  </div>
-  <div class="mgr-body" id="mgr-body"></div>
-</div>
-
-<!-- === OVERLAYS === -->
-<!-- MGR LOGIN -->
-<div class="ov" id="ov-mgrlogin">
-  <div class="sheet" style="position:relative">
-    <div class="sh-hdl"></div>
-    <button class="xbtn" onclick="cov('ov-mgrlogin')">✕</button>
-    <div class="sh-t" id="ml-t">دخول المدير</div>
-    <div style="font-size:13px;color:var(--tx2);font-weight:600;margin-bottom:4px;text-align:center" id="ml-s">أدخل رمز الوصول</div>
-    <div style="font-size:12px;color:var(--yd);font-weight:800;text-align:center;margin-bottom:16px">(الرمز التجريبي: 0000)</div>
-    <div class="pin-row">
-      <input class="pb" maxlength="1" id="p0" oninput="pi(this,0)">
-      <input class="pb" maxlength="1" id="p1" oninput="pi(this,1)">
-      <input class="pb" maxlength="1" id="p2" oninput="pi(this,2)">
-      <input class="pb" maxlength="1" id="p3" oninput="pi(this,3)">
-    </div>
-    <button class="btn btn-y" onclick="verPin()" id="ml-btn">دخول</button>
-  </div>
-</div>
-<!-- RENT -->
-<div class="ov" id="ov-rent">
-  <div class="sheet" style="position:relative">
-    <div class="sh-hdl"></div>
-    <button class="xbtn" onclick="cov('ov-rent')">✕</button>
-    <div class="sh-t" id="sh-rt">استئجار دراجة</div>
-    <div id="sh-binfo" style="background:var(--yl);border-radius:var(--rs);padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
-      <div style="width:42px;height:42px;background:var(--y);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--bg)" id="sh-bid">A01</div>
-      <div><div style="font-size:14px;font-weight:800" id="sh-bloc">أبوعريش الشمالية</div><div style="font-size:11px;color:var(--tx2);font-weight:600" id="sh-bdist">120م</div></div>
-    </div>
-    <div style="font-size:11px;font-weight:900;color:var(--tx2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px" id="lbl-dur">اختر المدة</div>
-    <div class="dg">
-      <div class="dt s" onclick="pd(this,15,10)"><div class="dtt" id="dt1">15 دقيقة</div><div class="dtp">10 ر.س</div><div class="dtn" id="dn1">تنقل سريع</div></div>
-      <div class="dt" onclick="pd(this,30,15)"><div class="dtt" id="dt2">30 دقيقة</div><div class="dtp">15 ر.س</div><div class="dtn" id="dn2">جولة قصيرة</div></div>
-      <div class="dt" onclick="pd(this,60,20)"><div class="dtt" id="dt3">ساعة</div><div class="dtp">20 ر.س</div><div class="dtn" id="dn3">⭐ الأكثر طلباً</div></div>
-      <div class="dt" onclick="pd(this,120,30)"><div class="dtt" id="dt4">ساعتان</div><div class="dtp">30 ر.س</div><div class="dtn" id="dn4">رحلة ممتعة</div></div>
-    </div>
-    <div class="pol" id="sh-pol">⚠️ <strong>لا استرداد</strong> — الوقت غير المستخدم يتحول لنقاط ولاء فوراً 🎁</div>
-    <div style="font-size:11px;font-weight:900;color:var(--tx2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px" id="lbl-pay">طريقة الدفع</div>
-    <div class="pay-r">
-      <div class="pt s" onclick="pp(this,'wallet')">👛 <span id="pw-l">محفظة</span></div>
-      <div class="pt" onclick="pp(this,'card')">💳 <span id="pc-l">بطاقة</span></div>
-      <div class="pt" onclick="pp(this,'stc')">📱 STC</div>
-    </div>
-    <div class="cf" id="cf">
-      <label class="fld-lbl" id="lbl-cn">رقم البطاقة</label>
-      <input class="inp" type="text" placeholder="1234 5678 9012 3456" maxlength="19">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><label class="fld-lbl" id="lbl-ex">الانتهاء</label><input class="inp" type="text" placeholder="MM/YY" style="margin-bottom:0"></div>
-        <div><label class="fld-lbl">CVV</label><input class="inp" type="text" placeholder="123" maxlength="3" style="margin-bottom:0"></div>
-      </div>
-    </div>
-    <div style="margin-top:12px"></div>
-    <div class="tot"><span class="tot-l" id="lbl-tot">المجموع</span><span class="tot-v" id="tot-v">10 ر.س</span></div>
-    <button class="btn btn-y" onclick="confRent()" id="btn-pay">تأكيد الدفع</button>
-    <button class="btn-ghost" onclick="cov('ov-rent')" id="btn-can">إلغاء</button>
-  </div>
-</div>
-<!-- TOPUP -->
-<div class="ov" id="ov-topup">
-  <div class="sheet" style="position:relative">
-    <div class="sh-hdl"></div>
-    <button class="xbtn" onclick="cov('ov-topup')">✕</button>
-    <div class="sh-t" id="sh-tut">شحن الرصيد</div>
-    <div class="dg">
-      <div class="dt" onclick="ptu(this,50)"><div class="dtp">50</div><div class="dtn">ر.س</div></div>
-      <div class="dt s" onclick="ptu(this,100)"><div class="dtp">100</div><div class="dtn">ر.س</div></div>
-      <div class="dt" onclick="ptu(this,200)"><div class="dtp">200</div><div class="dtn">ر.س</div></div>
-      <div class="dt" onclick="ptu(this,500)"><div class="dtp">500</div><div class="dtn">ر.س</div></div>
-    </div>
-    <div class="pay-r">
-      <div class="pt s" onclick="pp(this,'card')">💳 <span id="tpc">بطاقة</span></div>
-      <div class="pt" onclick="pp(this,'stc')">📱 STC</div>
-      <div class="pt" onclick="pp(this,'mada')">🏦 مدى</div>
-    </div>
-    <label class="fld-lbl" id="lbl-cn2">رقم البطاقة</label>
-    <input class="inp" type="text" placeholder="1234 5678 9012 3456">
-    <button class="btn btn-y" onclick="confTopup()" id="btn-tu">شحن الآن</button>
-  </div>
-</div>
-<!-- EXTEND -->
-<div class="ov" id="ov-ext">
-  <div class="sheet" style="position:relative">
-    <div class="sh-hdl"></div>
-    <button class="xbtn" onclick="cov('ov-ext')">✕</button>
-    <div class="sh-t" id="sh-ext">تمديد الوقت</div>
-    <div class="dg">
-      <div class="dt s" onclick="pex(this,15)"><div class="dtt" id="ex1">15 دقيقة</div><div class="dtp">10 ر.س</div></div>
-      <div class="dt" onclick="pex(this,30)"><div class="dtt" id="ex2">30 دقيقة</div><div class="dtp">15 ر.س</div></div>
-      <div class="dt" onclick="pex(this,60)"><div class="dtt" id="ex3">ساعة</div><div class="dtp">20 ر.س</div></div>
-      <div class="dt" onclick="pex(this,120)"><div class="dtt" id="ex4">ساعتان</div><div class="dtp">30 ر.س</div></div>
-    </div>
-    <div class="pol" id="ext-pol">⭐ الوقت الإضافي غير المستخدم يُحوَّل أيضاً لنقاط</div>
-    <button class="btn btn-y" onclick="confExt()" id="btn-extc">تأكيد التمديد</button>
-  </div>
-</div>
-<!-- SUCCESS -->
-<div class="ov" id="ov-suc">
-  <div class="sheet">
-    <div class="sh-hdl"></div>
-    <div class="suc">
-      <div class="suc-em">🎉</div>
-      <div class="suc-t" id="suc-t">تم الحجز!</div>
-      <div class="suc-s" id="suc-s">رحلتك بدأت 🚴 الوقت غير المستخدم = نقاط ولاء</div>
-      <button class="btn btn-y" onclick="cov('ov-suc');ss('track')" id="btn-go">عرض التتبع المباشر</button>
-    </div>
-  </div>
-</div>
-<!-- END -->
-<div class="ov" id="ov-end">
-  <div class="sheet">
-    <div class="sh-hdl"></div>
-    <div class="suc">
-      <div class="suc-em">⭐</div>
-      <div class="suc-t" id="end-t">انتهت الرحلة!</div>
-      <div class="suc-s" id="end-s">تحوّل وقتك غير المستخدم إلى نقاط ولاء</div>
-      <div class="pts-box">
-        <div class="pb-l" id="end-ul">الوقت غير المستخدم</div>
-        <div class="pb-n" id="end-un">0 دقيقة</div>
-        <div style="font-size:26px;font-weight:900;color:var(--yd);margin-top:8px" id="end-pts">+ 0 نقطة ⭐</div>
-        <div class="pb-note" id="end-note">أُضيفت فوراً لحسابك</div>
-      </div>
-      <button class="btn btn-y" onclick="cov('ov-end');ss('home')" id="btn-eh">العودة للرئيسية</button>
-    </div>
-  </div>
-</div>
-</div>
-<div class="toast" id="toast"></div>
-
-<script>
-const BK={
-  A01:{ar:'أبوعريش الشمالية',en:'N. Abu Arish',da:'120م',de:'120m'},
-  A02:{ar:'الكورنيش',en:'Corniche',da:'300م',de:'300m'},
-  A03:{ar:'السوق المركزي',en:'Central Market',da:'450م',de:'450m'},
-  A04:{ar:'حديقة الأمير',en:'Prince Park',da:'600م',de:'600m'},
-  A05:{ar:'المطار القديم',en:'Old Airport',da:'800م',de:'800m',rented:true}
-};
-const PRICES={15:10,30:15,60:20,120:30};
-const TUT=[
-  {em:'🚲',ta:'استأجر في ثوانٍ',te:'Rent in Seconds',da:'اختر دراجتك، حدد المدة، وادفع بنقرة واحدة — بدون أي تعقيد',de:'Pick a bike, choose duration, pay in one tap — no hassle',col:'rgba(245,192,0,.1)'},
-  {em:'📍',ta:'تتبع مسارك',te:'Track Your Ride',da:'شاهد موقع دراجتك لحظة بلحظة على الخريطة التفاعلية',de:'See your bike location in real-time on the live map',col:'rgba(52,211,153,.1)'},
-  {em:'⭐',ta:'اكسب نقاط بكل رحلة',te:'Earn Points Every Ride',da:'كل رحلة تضيف نقاطاً لبرنامج الولاء — استبدلها بمكافآت حصرية',de:'Every ride earns loyalty points — redeem for exclusive rewards',col:'rgba(168,85,247,.1)'},
-  {em:'💡',ta:'لا يضيع منك شيء',te:'Never Waste a Minute',da:'أنهيت قبل الوقت؟ كل دقيقة غير مستخدمة = نقطة ولاء فوراً!',de:'End early? Every unused minute converts to loyalty points instantly!',col:'rgba(251,146,60,.1)'},
-  {em:'🏅',ta:'ارقَ للمستوى الذهبي',te:'Reach Gold Tier',da:'تراكم النقاط يرفع مستواك للحصول على مكافآت أكبر وأروع',de:'Stack points to unlock bigger rewards and premium perks',col:'rgba(245,192,0,.1)'}
-];
-const RW=[
-  {em:'🕐',na:'ساعة مجانية',ne:'1 Free Hour',pts:100},
-  {em:'🏷️',na:'خصم 20%',ne:'20% Discount',pts:150},
-  {em:'📅',na:'عضوية شهرية',ne:'Monthly Pass',pts:400},
-  {em:'🌟',na:'يوم مجاني',ne:'Free Day',pts:500}
-];
-const EARN=[
-  {ar:'دقيقة غير مستخدمة',en:'Each unused minute',v:'1 ⭐'},
-  {ar:'رحلة مكتملة',en:'Full ride completion',v:'+20 ⭐'},
-  {ar:'إيجار يومي',en:'Full day rental',v:'+50 ⭐'},
-  {ar:'دعوة صديق',en:'Refer a friend',v:'+100 ⭐'},
-  {ar:'تقييم الرحلة',en:'Rate a trip',v:'+5 ⭐'}
-];
-
-let L='ar',PTS=320,TSEC=0,TINT=null,CBIKE='A01',CDUR=15,CPRICE=10,CEXT=15,CTU=100,A05SEC=1335,TIDX=0;
-let RIDES=[],BSTATS={},ASTATS={};
-let RIDE_ACTIVE=null;
-
-// ---- STORAGE ----
-async function loadRides(){
-  try{const r=await window.storage.get('cf:rides',true);RIDES=r?JSON.parse(r.value):[];}catch{RIDES=[];}
-  if(!RIDES.length)seedDemo();
-  computeStats();
-}
-async function saveRide(r){RIDES.push(r);try{await window.storage.set('cf:rides',JSON.stringify(RIDES),true);}catch{}computeStats();}
-async function loadUser(){try{const r=await window.storage.get('cf:user');if(r)return JSON.parse(r.value);}catch{}return null;}
-async function saveUser(u){try{await window.storage.set('cf:user',JSON.stringify(u));}catch{}}
-
-function seedDemo(){
-  const USERS=['محمد الغامدي','أحمد الزهراني','خالد العمري','سارة الحارثي','فيصل القحطاني','نورة الشهري','عبدالله الدوسري','ريم المالكي','سلمى الأحمدي','ياسر البلوي'];
-  const BIKES=['A01','A02','A03','A04','A05'];
-  const DURS=[15,30,60,120];
-  const now=Date.now();
-  for(let i=0;i<50;i++){
-    const bk=BIKES[Math.floor(Math.random()*5)];
-    const dur=DURS[Math.floor(Math.random()*4)];
-    const early=Math.random()<0.35;
-    const ext=!early&&Math.random()<0.24;
-    const used=early?Math.floor(dur*(.3+Math.random()*.5)):dur;
-    const unused=dur-used;
-    RIDES.push({id:'R'+String(i+1).padStart(3,'0'),bike:bk,dur,price:PRICES[dur],user:USERS[Math.floor(Math.random()*USERS.length)],usedMins:used,unusedMins:unused,earlyEnd:early,extended:ext,pts:unused+(early?0:20),ts:now-i*3600000*(1+Math.random()*24)});
-  }
-  try{window.storage.set('cf:rides',JSON.stringify(RIDES),true);}catch{}
-}
-
-function computeStats(){
-  const bk={A01:{rides:0,mins:0,rev:0},A02:{rides:0,mins:0,rev:0},A03:{rides:0,mins:0,rev:0},A04:{rides:0,mins:0,rev:0},A05:{rides:0,mins:0,rev:0}};
-  const d={15:0,30:0,60:0,120:0};
-  let early=0,ext=0,rev=0,mins=0;
-  RIDES.forEach(r=>{if(bk[r.bike]){bk[r.bike].rides++;bk[r.bike].mins+=r.usedMins;bk[r.bike].rev+=r.price;}if(d[r.dur]!==undefined)d[r.dur]++;if(r.earlyEnd)early++;if(r.extended)ext++;rev+=r.price;mins+=r.usedMins;});
-  BSTATS=bk;ASTATS={total:RIDES.length,earlyEnds:early,extensions:ext,totalRev:rev,totalMins:mins,durs:d};
-}
-
-// ---- NAVIGATION ----
-function gv(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById(id).classList.add('on');}
-function openOv(id){document.getElementById(id).classList.add('on');}
-function cov(id){document.getElementById(id).classList.remove('on');}
-function ss(s){
-  document.querySelectorAll('.scr').forEach(e=>e.classList.remove('on'));
-  document.querySelectorAll('.ni').forEach(e=>e.classList.remove('on'));
-  document.getElementById('sc-'+s).classList.add('on');
-  const nm={home:'home',track:'track',loyalty:'loy',history:'hist'};
-  const ni=document.getElementById('ni-'+(nm[s]||s));if(ni)ni.classList.add('on');
-  if(s==='loyalty'){renderRW();renderEarn();}
-  if(s==='history')renderHist();
-}
-
-// ---- REGISTRATION ----
-function chkPh(){const v=document.getElementById('phi').value.replace(/\D/g,'');const b=document.getElementById('ph-btn');b.style.opacity=v.length===9?'1':'0.4';b.style.pointerEvents=v.length===9?'auto':'none';}
-let OTP='';
-function sendOtp(){OTP=String(Math.floor(100000+Math.random()*900000));document.getElementById('ot-code').textContent=OTP;gv('v-otp');}
-function oi(el,i){if(el.value.length===1&&i<5)document.getElementById('o'+(i+1)).focus();const c=[0,1,2,3,4,5].map(j=>document.getElementById('o'+j).value).join('');const b=document.getElementById('ot-btn');b.style.opacity=c.length===6?'1':'0.4';b.style.pointerEvents=c.length===6?'auto':'none';}
-function verOtp(){const c=[0,1,2,3,4,5].map(i=>document.getElementById('o'+i).value).join('');if(c===OTP)gv('v-name');else toast(L==='ar'?'❌ رمز خاطئ':'❌ Wrong code');}
-function chkNm(){const f=document.getElementById('fni').value.trim(),l=document.getElementById('lni').value.trim();const b=document.getElementById('nm-btn');b.style.opacity=(f&&l)?'1':'0.4';b.style.pointerEvents=(f&&l)?'auto':'none';}
-async function saveNm(){const f=document.getElementById('fni').value.trim(),l=document.getElementById('lni').value.trim();const u={phone:'',firstName:f,lastName:l,pts:320,registeredAt:Date.now()};await saveUser(u);PTS=320;initTut();gv('v-tut');}
-
-// ---- TUTORIAL ----
-function initTut(){
-  const w=document.getElementById('tut-wrap'),d=document.getElementById('tut-dots');
-  w.innerHTML='';d.innerHTML='';TIDX=0;
-  TUT.forEach((t,i)=>{
-    const s=document.createElement('div');s.className='ts'+(i===0?' on':'');
-    s.innerHTML=`<div class="ts-icon" style="background:${t.col}">${t.em}</div><div class="ts-title">${L==='ar'?t.ta:t.te}</div><div class="ts-desc">${L==='ar'?t.da:t.de}</div>`;
-    w.appendChild(s);
-    const dd=document.createElement('div');dd.className='tdot'+(i===0?' on':'');d.appendChild(dd);
-  });
-  document.getElementById('tut-next').textContent=L==='ar'?'التالي':'Next';
-}
-function tutNext(){
-  const sl=document.querySelectorAll('.ts'),dt=document.querySelectorAll('.tdot');
-  if(TIDX<sl.length-1){sl[TIDX].classList.remove('on');sl[TIDX].classList.add('prev');TIDX++;sl[TIDX].classList.add('on');setTimeout(()=>sl[TIDX-1].classList.remove('prev'),400);dt.forEach((d,i)=>d.classList.toggle('on',i===TIDX));if(TIDX===sl.length-1){document.getElementById('tut-next').textContent=L==='ar'?'ابدأ الآن!':'Start Now!';document.getElementById('tut-next').onclick=goApp;}}else goApp();
-}
-function goApp(){
-  const u={firstName:'مستخدم',lastName:''};
-  const hdr=document.getElementById('hdr-nm');const av=document.getElementById('hdr-av');
-  if(hdr)hdr.textContent=(L==='ar'?'مرحباً، ':' Hi, ')+(window._usr?.firstName||u.firstName);
-  if(av)av.textContent=(window._usr?.firstName||u.firstName)[0]||'م';
-  const pd=document.getElementById('pts-disp');if(pd)pd.textContent=PTS+' ⭐';
-  const lp=document.getElementById('loy-pts');if(lp)lp.textContent=PTS;
-  const pf=document.getElementById('prog-f');if(pf)pf.style.width=Math.min((PTS/500)*100,100)+'%';
-  renderBikes();renderRW();renderEarn();renderHistStats();
-  gv('v-app');
-}
-
-// ---- BIKES ----
-function renderBikes(){
-  const el=document.getElementById('bikes-list');el.innerHTML='';
-  Object.entries(BK).forEach(([id,b])=>{
-    const avail=!b.rented;
-    const d=document.createElement('div');d.className='bk'+(avail?'':' locked');
-    if(avail)d.onclick=()=>selBike(id);
-    d.innerHTML=`<div class="bk-badge${avail?'':' dim'}">${id}</div>
-    <div class="bk-mid">
-      <div class="bk-nm">${id}</div>
-      <div class="bk-loc">📍 ${L==='ar'?b.ar:b.en} · ${L==='ar'?b.da:b.de}</div>
-      <div class="bk-row">
-        <span class="chip ${avail?'cg':'co'}">${avail?(L==='ar'?'متاحة':'Available'):(L==='ar'?'محجوزة':'Rented')}</span>
-        ${!avail?`<span style="font-size:11px;color:var(--or);font-weight:700">${L==='ar'?'متاحة خلال:':'Available in:'}</span><span class="avl-t" id="a05t">00:22:15</span>`:''}
-      </div>
-    </div>
-    <div class="bk-rt"><div class="bk-price" style="${avail?'':'color:var(--tx2)'}">10 ر.س</div><div class="bk-psub">${L==='ar'?'من 15 دقيقة':'from 15 min'}</div></div>`;
-    el.appendChild(d);
-  });
-  runA05();
-}
-let A05INT=null;
-function runA05(){
-  if(A05INT)clearInterval(A05INT);
-  A05INT=setInterval(()=>{
-    if(A05SEC>0){A05SEC--;const el=document.getElementById('a05t');if(el){const m=Math.floor(A05SEC/60),s=A05SEC%60;el.textContent='00:'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}}
-    else{clearInterval(A05INT);BK.A05.rented=false;renderBikes();toast('🚲 A05 '+(L==='ar'?'أصبحت متاحة!':'is now available!'));}
-  },1000);
-}
-
-// ---- RENT FLOW ----
-function selBike(id){CBIKE=id;const b=BK[id];document.getElementById('sh-bid').textContent=id;document.getElementById('sh-bloc').textContent=L==='ar'?b.ar:b.en;document.getElementById('sh-bdist').textContent=L==='ar'?b.da:b.de;openOv('ov-rent');}
-function pd(el,m,p){document.querySelectorAll('#ov-rent .dt').forEach(d=>d.classList.remove('s'));el.classList.add('s');CDUR=m;CPRICE=p;document.getElementById('tot-v').textContent=p+(L==='ar'?' ر.س':' SAR');}
-function pp(el,m){el.closest('.pay-r').querySelectorAll('.pt').forEach(p=>p.classList.remove('s'));el.classList.add('s');const cf=document.getElementById('cf');if(cf)cf.style.display=m==='card'?'block':'none';}
-function pex(el,m){document.querySelectorAll('#ov-ext .dt').forEach(d=>d.classList.remove('s'));el.classList.add('s');CEXT=m;}
-function ptu(el,a){document.querySelectorAll('#ov-topup .dt').forEach(d=>d.classList.remove('s'));el.classList.add('s');CTU=a;}
-function confRent(){cov('ov-rent');document.getElementById('tr-bk').textContent=CBIKE;document.getElementById('v-paid').textContent=CPRICE+(L==='ar'?' ر.س':' SAR');TSEC=CDUR*60;RIDE_ACTIVE={bike:CBIKE,dur:CDUR,price:CPRICE,start:Date.now(),extended:false};startTimer();openOv('ov-suc');}
-function confTopup(){cov('ov-topup');toast('✅ '+(L==='ar'?'تم شحن '+CTU+' ر.س':'Topped up '+CTU+' SAR'));}
-function confExt(){TSEC+=CEXT*60;if(RIDE_ACTIVE)RIDE_ACTIVE.extended=true;cov('ov-ext');toast('✅ '+(L==='ar'?'+'+CEXT+' دقيقة':'+'+CEXT+' min extended'));}
-
-// ---- TIMER ----
-function startTimer(){
-  if(TINT)clearInterval(TINT);
-  TINT=setInterval(()=>{
-    if(TSEC>0){TSEC--;const h=Math.floor(TSEC/3600),m=Math.floor((TSEC%3600)/60),s=TSEC%60;
-      document.getElementById('countdown').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-      document.getElementById('v-pts').textContent='+'+(Math.floor((CDUR-TSEC/60)*.5))+' ⭐';
-    }else{clearInterval(TINT);finishRide(false,0);}
-  },1000);
-}
-function endRental(){clearInterval(TINT);finishRide(true,Math.floor(TSEC/60));}
-function finishRide(early,unused){
-  const bonus=unused+20;addPts(bonus);TSEC=0;
-  document.getElementById('countdown').textContent='00:00:00';
-  document.getElementById('end-un').textContent=unused+(L==='ar'?' دقيقة':' min');
-  document.getElementById('end-pts').textContent='+ '+bonus+' '+(L==='ar'?'نقطة ⭐':'pts ⭐');
-  if(RIDE_ACTIVE){
-    saveRide({id:'R'+Date.now(),bike:RIDE_ACTIVE.bike,dur:RIDE_ACTIVE.dur,price:RIDE_ACTIVE.price,user:window._usr?window._usr.firstName+' '+window._usr.lastName:'مستخدم',usedMins:RIDE_ACTIVE.dur-unused,unusedMins:unused,earlyEnd:early&&unused>0,extended:RIDE_ACTIVE.extended,pts:bonus,ts:Date.now()});
-    RIDE_ACTIVE=null;
-  }
-  openOv('ov-end');
-}
-
-// ---- POINTS ----
-function addPts(n){PTS=Math.max(0,PTS+n);const pd=document.getElementById('pts-disp');if(pd)pd.textContent=PTS+' ⭐';const lp=document.getElementById('loy-pts');if(lp)lp.textContent=PTS;const pf=document.getElementById('prog-f');if(pf)pf.style.width=Math.min((PTS/500)*100,100)+'%';updateRWBtns();}
-function updateRWBtns(){RW.forEach((r,i)=>{const b=document.getElementById('rwb'+i);if(b)b.disabled=PTS<r.pts;});}
-function redeem(i,pts){if(PTS>=pts){addPts(-pts);toast(L==='ar'?'🎁 تم الاستبدال!':'🎁 Redeemed!');}else toast(L==='ar'?'❌ نقاط غير كافية':'❌ Not enough points');}
-function renderRW(){document.getElementById('rw-grid').innerHTML=RW.map((r,i)=>`<div class="rw"><div class="rw-em">${r.em}</div><div class="rw-nm">${L==='ar'?r.na:r.ne}</div><div class="rw-pt">${r.pts} ${L==='ar'?'نقطة':'pts'}</div><button class="rw-b" id="rwb${i}" onclick="redeem(${i},${r.pts})" ${PTS<r.pts?'disabled':''}>${L==='ar'?'استبدل':'Redeem'}</button></div>`).join('');}
-function renderEarn(){document.getElementById('earn-list').innerHTML=EARN.map(r=>`<div class="mr"><span class="mr-l">${L==='ar'?r.ar:r.en}</span><span class="mr-v" style="color:var(--y)">${r.v}</span></div>`).join('');}
-
-// ---- HISTORY ----
-function renderHistStats(){
-  const tot=RIDES.length||0,rev=RIDES.reduce((a,r)=>a+r.price,0)||0;
-  document.getElementById('hist-sg').innerHTML=`
-    <div class="sb"><div class="sb-l">${L==='ar'?'الرحلات':'Trips'}</div><div class="sb-v">${tot}</div></div>
-    <div class="sb"><div class="sb-l">${L==='ar'?'الإنفاق':'Spent'}</div><div class="sb-v">${rev}<span class="sb-u"> ر.س</span></div></div>
-    <div class="sb"><div class="sb-l">${L==='ar'?'المسافة':'Distance'}</div><div class="sb-v">48.6<span class="sb-u"> km</span></div></div>
-    <div class="sb"><div class="sb-l">${L==='ar'?'نقاط':'Points'}</div><div class="sb-v">${PTS}<span class="sb-u"> ⭐</span></div></div>`;
-}
-function renderHist(){
-  renderHistStats();
-  const recent=[...RIDES].sort((a,b)=>b.ts-a.ts).slice(0,8);
-  document.getElementById('hist-list').innerHTML=recent.map(r=>{
-    const tag=r.earlyEnd?`<span class="rtag te">${L==='ar'?'مبكر':'Early'}</span>`:r.extended?`<span class="rtag tx2c">${L==='ar'?'ممدد':'Extended'}</span>`:`<span class="rtag tf">${L==='ar'?'مكتملة':'Full'}</span>`;
-    const d=new Date(r.ts).toLocaleDateString('ar-SA',{month:'short',day:'numeric'});
-    return`<div class="hc"><div class="hc-b">${r.bike}</div><div class="hc-m"><div class="hc-n">${r.bike} ${tag}</div><div class="hc-s">${d} · ${r.usedMins} ${L==='ar'?'دقيقة':'min'}</div></div><div class="hc-r"><div class="hc-c">${r.price} ر.س</div><div class="hc-p">+${r.pts} ⭐</div></div></div>`;
-  }).join('');
-}
-
-// ---- MANAGER ----
-function goMgr(){openOv('ov-mgrlogin');}
-function pi(el,i){if(el.value.length===1&&i<3)document.getElementById('p'+(i+1)).focus();}
-function verPin(){
-  const pin=[0,1,2,3].map(i=>document.getElementById('p'+i).value).join('');
-  if(pin==='0000'){cov('ov-mgrlogin');gv('v-mgr');mgrTab('ov');}
-  else{toast(L==='ar'?'❌ رمز خاطئ':'❌ Wrong PIN');[0,1,2,3].forEach(i=>{const e=document.getElementById('p'+i);if(e)e.value='';});document.getElementById('p0').focus();}
-}
-function mgrTab(t){
-  document.querySelectorAll('.mt').forEach(e=>e.classList.remove('on'));document.getElementById('mt-'+t).classList.add('on');
-  const body=document.getElementById('mgr-body'),a=ASTATS,b=BSTATS,tot=Math.max(a.total,1);
-  if(t==='ov'){
-    const topB=Object.entries(b).sort((x,y)=>y[1].rides-x[1].rides)[0]||['—',{rides:0}];
-    const topD=Object.entries(a.durs||{}).sort((x,y)=>y[1]-x[1])[0]||['—',0];
-    const dl={15:'15 دقيقة',30:'30 دقيقة',60:'ساعة',120:'ساعتان'};
-    body.innerHTML=`
-      <div class="og">
-        <div class="oc"><div class="oc-em">🚲</div><div class="oc-n">${tot}</div><div class="oc-l">إجمالي الرحلات</div><div class="oc-tr tup">↑ نشط</div></div>
-        <div class="oc"><div class="oc-em">💰</div><div class="oc-n">${a.totalRev||0}</div><div class="oc-l">الإيرادات (ر.س)</div></div>
-        <div class="oc"><div class="oc-em">🏆</div><div class="oc-n">${topB[0]}</div><div class="oc-l">أكثر دراجة طلباً</div></div>
-        <div class="oc"><div class="oc-em">⏱</div><div class="oc-n" style="font-size:16px">${dl[topD[0]]||'—'}</div><div class="oc-l">الفئة الأكثر طلباً</div></div>
-      </div>
-      <div class="cb"><div class="cb-t">📊 مؤشرات أداء سريعة</div>
-        <div class="mr"><span class="mr-l">🔴 نسبة الإنهاء المبكر</span><span class="mr-v" style="color:var(--pu)">${Math.round(a.earlyEnds/tot*100)}%</span></div>
-        <div class="mr"><span class="mr-l">🟡 نسبة طلب التمديد</span><span class="mr-v" style="color:var(--or)">${Math.round((a.extensions||0)/tot*100)}%</span></div>
-        <div class="mr"><span class="mr-l">🟢 نسبة الرحلات الكاملة</span><span class="mr-v" style="color:var(--gr)">${Math.round((tot-(a.earlyEnds||0))/tot*100)}%</span></div>
-        <div class="mr"><span class="mr-l">⏱ متوسط مدة الجلسة</span><span class="mr-v">${Math.round((a.totalMins||0)/tot)} دقيقة</span></div>
-      </div>`;
-  }
-  else if(t==='bk'){
-    const mx=Math.max(...Object.values(b).map(x=>x.rides),1);
-    body.innerHTML=`
-      <div class="cb"><div class="cb-t">🚲 عدد رحلات كل دراجة</div>${Object.entries(b).map(([id,s])=>`<div class="brow"><div class="br-l">${id}</div><div class="br-tr"><div class="br-f" style="width:${Math.round(s.rides/mx*100)}%"></div></div><div class="br-v">${s.rides}</div></div>`).join('')}</div>
-      <div class="cb"><div class="cb-t">💰 إيرادات كل دراجة</div>${Object.entries(b).map(([id,s])=>`<div class="mr"><span class="mr-l">${id}</span><span class="mr-v">${s.rev} ر.س <span style="font-size:11px;color:var(--tx2)">· ${s.mins} دقيقة</span></span></div>`).join('')}</div>`;
-  }
-  else if(t==='an'){
-    const d=a.durs||{15:0,30:0,60:0,120:0};
-    const dl={15:'15 دقيقة',30:'30 دقيقة',60:'ساعة',120:'ساعتان'};
-    const dc=['var(--y)','var(--gr)','var(--pu)','var(--or)'];
-    const maxD=Math.max(...Object.values(d),1);
-    const earlyP=Math.round((a.earlyEnds||0)/tot*100);
-    const extP=Math.round((a.extensions||0)/tot*100);
-    const fullP=Math.max(0,100-earlyP-extP);
-    body.innerHTML=`
-      <div class="cb"><div class="cb-t">⏱ توزيع فئات المدة المختارة</div>
-        ${Object.entries(d).map(([k,v],i)=>`<div class="brow"><div class="br-l" style="width:70px;font-size:10px">${dl[k]}</div><div class="br-tr"><div class="br-f" style="width:${Math.round(v/maxD*100)}%;background:${dc[i]}"></div></div><div class="br-v">${Math.round(v/Math.max(Object.values(d).reduce((a,b)=>a+b,0),1)*100)}%</div></div>`).join('')}
-      </div>
-      <div class="cb"><div class="cb-t">🎯 تحليل سلوك العملاء</div>
-        ${[{l:'أنهوا مبكراً وكسبوا نقاطاً',p:earlyP,c:'var(--pu)'},{l:'أكملوا الوقت بالكامل',p:fullP,c:'var(--gr)'},{l:'طلبوا تمديد الوقت ودفعوا',p:extP,c:'var(--or)'}].map(x=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--br)"><div style="width:10px;height:10px;background:${x.c};border-radius:3px;flex-shrink:0"></div><div style="flex:1;font-size:12px;font-weight:700;color:var(--tx2)">${x.l}</div><div style="font-size:18px;font-weight:900;color:${x.c}">${x.p}%</div></div>`).join('')}
-        <div style="background:var(--s3);border-radius:8px;overflow:hidden;height:10px;display:flex;margin-top:12px">
-          <div style="width:${earlyP}%;background:var(--pu)"></div>
-          <div style="width:${fullP}%;background:var(--gr)"></div>
-          <div style="width:${extP}%;background:var(--or)"></div>
-        </div>
-      </div>
-      <div class="cb"><div class="cb-t">💡 نقاط الولاء الموزعة</div>
-        <div class="mr"><span class="mr-l">من وقت غير مستخدم</span><span class="mr-v" style="color:var(--y)">${RIDES.reduce((a,r)=>a+r.unusedMins,0)} ⭐</span></div>
-        <div class="mr"><span class="mr-l">من إتمام رحلة</span><span class="mr-v" style="color:var(--y)">${(tot-(a.earlyEnds||0))*20} ⭐</span></div>
-        <div class="mr"><span class="mr-l">إجمالي الموزعة</span><span class="mr-v" style="color:var(--y)">${RIDES.reduce((a,r)=>a+r.pts,0)} ⭐</span></div>
-      </div>`;
-  }
-  else{
-    const recent=[...RIDES].sort((a,b)=>b.ts-a.ts).slice(0,25);
-    body.innerHTML=`<div style="font-size:14px;font-weight:800;margin-bottom:12px">آخر ${recent.length} رحلة</div>`+recent.map(r=>{
-      const tag=r.earlyEnd?`<span class="rtag te">مبكر</span>`:r.extended?`<span class="rtag tx2c">ممدد</span>`:`<span class="rtag tf">مكتمل</span>`;
-      const d=new Date(r.ts).toLocaleDateString('ar-SA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-      return`<div class="rr"><span class="rr-id">${r.bike}</span><div class="rr-inf"><div class="rr-n">${r.user} ${tag}</div><div class="rr-s">${d} · ${r.usedMins}/${r.dur} دقيقة</div></div><div class="rr-rt"><div class="rr-p">${r.price} ر.س</div><div style="font-size:10px;color:var(--yd);font-weight:800">+${r.pts} ⭐</div></div></div>`;
-    }).join('');
-  }
-}
-
-// ---- TOAST ----
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800);}
-
-// ---- INIT ----
-(async()=>{
-  await loadRides();
-  const u=await loadUser();
-  if(u){window._usr=u;PTS=u.pts||320;goApp();}
-  // check for ?manager in URL
-  if(location.search.includes('manager'))goMgr();
-})();
-</script>
+    <script src="bike-rental-system.js"></script>
 </body>
 </html>
