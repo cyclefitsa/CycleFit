@@ -598,21 +598,38 @@ document.getElementById('btn-resend').addEventListener('click', async () => {
 document.getElementById('btn-verify').addEventListener('click', async () => {
   const phone = document.getElementById('inp-phone').value.trim();
   const token = document.getElementById('inp-otp').value.trim();
-  if (token.length < 6) return toast('أدخل الرمز كاملاً', 'error');
+  const name  = document.getElementById('inp-name').value.trim();
+  if (!token) return toast('أدخل الرمز', 'error');
 
   const btn = document.getElementById('btn-verify');
   setLoading(btn, true, 'تحقق ودخول');
+
+  // TEST MODE: code 1234 bypasses real SMS — remove once Twilio is connected
+  if (token === '1234') {
+    const fakeEmail = phone.replace('+','') + '@test-cyclefit.com';
+    const fakePass  = 'test_' + phone.replace('+','');
+    let { data, error } = await sb.auth.signInWithPassword({ email: fakeEmail, password: fakePass });
+    if (error) {
+      const res = await sb.auth.signUp({ email: fakeEmail, password: fakePass });
+      data = res.data; error = res.error;
+    }
+    setLoading(btn, false, 'تحقق ودخول');
+    if (error) return toast('خطأ: ' + error.message, 'error');
+    currentUser = data.user;
+    await sb.from('profiles').upsert({ id: currentUser.id, full_name: name, phone }, { onConflict: 'id' });
+    document.getElementById('user-badge').textContent = name;
+    toast('مرحباً ' + name + ' 🎉');
+    await checkActiveBooking();
+    return;
+  }
+  // END TEST MODE
+
   const { data, error } = await sb.auth.verifyOtp({ phone, token, type: 'sms' });
   setLoading(btn, false, 'تحقق ودخول');
-
   if (error) return toast('رمز خاطئ أو منتهي', 'error');
-
   currentUser = data.user;
-
-  // Upsert profile
-  const name = document.getElementById('inp-name').value.trim();
   await sb.from('profiles').upsert({ id: currentUser.id, full_name: name, phone }, { onConflict: 'id' });
-
+  document.getElementById('user-badge').textContent = name;
   toast('مرحباً ' + name + ' 🎉');
   await checkActiveBooking();
 });
