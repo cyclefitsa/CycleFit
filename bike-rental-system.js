@@ -1,88 +1,59 @@
-alert("أنا أعمل! تم ربط ملف الجافا سكريبت بنجاح");
-console.log("تم تشغيل الملف...");
-// [1] الأعلى: روابط الاتصال (Keys)
+// [1] الإعدادات والاتصال
 const SUPABASE_URL = 'https://weuzlifquyzyjyvguvif.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_vEkF99aOD3eu0mq3C-r-Lg_D5h9qDOe'; 
-
-// [2] المنتصف: تعريف المكتبة والوظائف
-// ملاحظة: تأكد أنك تستخدم s صغيرة في البداية و S كبيرة في createClient
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// وظيفة لجلب الدراجات من القاعدة
-async function loadBikes() {
-    try {
-        const { data, error } = await supabaseClient
-            .from('bikes')
-            .select('*')
-            .order('bike_name', { ascending: true });
-
-        if (error) throw error;
-
-        console.log("تم جلب الدراجات بنجاح:", data);
-        return data;
-    } catch (err) {
-        console.error("فشل في جلب الدراجات:", err.message);
-        return null;
-    }
-}
-
-// [3] الأسفل: الأوامر الحركية (Events)
+// [2] الوظائف الحركية
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("تم تحميل نظام CycleFit الأخضر...");
-
-    // العناصر (Elements) من ملف الـ HTML الجديد
-    const startBtn = document.getElementById('start-journey-btn');
+    
+    // تعريف العناصر
     const mainContent = document.getElementById('main-content');
     const loginScreen = document.getElementById('login-screen');
-    const sendOtpBtn = document.getElementById('send-otp');
+    const phoneSection = document.getElementById('phone-section');
+    const otpSection = document.getElementById('otp-section');
+    
+    const startBtn = document.getElementById('start-journey-btn');
+    const sendOtpBtn = document.getElementById('send-otp-btn');
+    const verifyBtn = document.getElementById('verify-btn');
 
-    // 1. عند الضغط على "انطلق الآن"
+    // 1. عند الضغط على انطلق الآن
     if (startBtn) {
-        startBtn.addEventListener('click', async () => {
-            console.log("بدء الانتقال لشاشة تسجيل الدخول...");
-            
-            // تأثير بصري سريع قبل الإخفاء
-            startBtn.innerText = "جاري التحميل...";
-            
-            // جلب البيانات من Supabase للتأكد من الاتصال
-            const bikes = await loadBikes();
-
-            if (bikes) {
-                // إخفاء الواجهة الرئيسية وإظهار شاشة تسجيل الدخول
-                mainContent.style.display = 'none';
-                loginScreen.style.display = 'block';
-                
-                // إضافة أنيميشن بسيط للشاشة الجديدة
-                loginScreen.style.animation = 'fadeIn 0.5s ease-in';
-            } else {
-                alert("عذراً، تعذر الاتصال بالنظام. تحقق من الإنترنت.");
-                startBtn.innerText = "انطلق الآن";
-            }
+        startBtn.addEventListener('click', () => {
+            mainContent.style.display = 'none';
+            loginScreen.style.display = 'block';
         });
     }
 
-    // 2. عند الضغط على "أرسل الرمز" في شاشة الدخول
+    // 2. عند الضغط على أرسل الرمز
     if (sendOtpBtn) {
         sendOtpBtn.addEventListener('click', () => {
             const name = document.getElementById('full-name').value;
             const phone = document.getElementById('phone-number').value;
 
-            if (name && phone) {
-                alert(`أهلاً يا ${name}! سيتم إرسال الرمز إلى ${phone} قريباً.`);
-                // هنا سنقوم لاحقاً بربط كود الـ OTP الحقيقي
+            if (name.length > 2 && phone.length >= 10) {
+                document.getElementById('login-title').innerText = "تحقق من الهوية";
+                phoneSection.style.display = 'none';
+                otpSection.style.display = 'block';
+                console.log(`تم إرسال رمز تجريبي للمستخدم: ${name}`);
             } else {
-                alert("يرجى إدخال الاسم ورقم الجوال أولاً.");
+                alert("يرجى إدخال اسمك ورقم جوالك بشكل صحيح");
+            }
+        });
+    }
+
+    // 3. التحقق من الرمز (1234)
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', () => {
+            const code = document.getElementById('otp-input').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            if (code === "1234") {
+                alert("تم تسجيل الدخول بنجاح! جاري تحويلك لمنصة الدراجات...");
+                // ملاحظة: هنا سنضيف كود عرض الدراجات في التحديث القادم
+            } else {
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "الرمز غير صحيح، جرب الكود التجريبي 1234";
             }
         });
     }
 });
-
-// إضافة تأثير ظهور ناعم (FadeIn) برمجياً
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-`;
-document.head.appendChild(style);
